@@ -31,6 +31,9 @@
 <script src="../dist/js/pages/dashboard.js"></script>
 <!-- AdminLTE for demo purposes -->
 <script src="../dist/js/demo.js"></script>
+<!-- jsGrid -->
+<script src="../plugins/jsgrid/demos/db.js"></script>
+<script src="../plugins/jsgrid/jsgrid.min.js"></script>
 
 <!-- The core Firebase JS SDK is always required and must be listed first -->
 <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-app.js"></script>

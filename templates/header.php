@@ -26,4 +26,7 @@
   <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
   <!-- icheck bootstrap -->
   <link rel="stylesheet" href="../plugins/icheck-bootstrap/icheck-bootstrap.min.css">
+  <!-- jsGrid -->
+  <link rel="stylesheet" href="../plugins/jsgrid/jsgrid.min.css">
+  <link rel="stylesheet" href="../plugins/jsgrid/jsgrid-theme.min.css">
 </head>
