@@ -95,73 +95,37 @@
         temp = doc.data();
         data.push(temp);
       });
-      console.log(data);
       load();
     });
 
   function load() {
+    console.log(data);
     $("#jsGrid1").jsGrid({
       height: "100%",
       width: "100%",
 
       filtering: true,
+      editing: true,
       sorting: true,
+      autoload: true,
 
-      data: [
-        {
-          "kode": "adlfadfasdfadf",
-          "nama": "61",
-          "manager": "6",
-          "group": "Ap #897-1459 Quam Avenue",
-          "show": "false"
+      controller: {
+        loadData: function(filter) {
+          return $.grep(data, function(client) {
+            return (!filter.kode || client.kode.indexOf(filter.kode) > -1)
+              && (!filter.nama || client.nama.indexOf(filter.nama) > -1)
+              && (!filter.manager || client.manager.indexOf(filter.manager) > -1)
+              && (!filter.show || client.show.indexOf(filter.show) > -1)
+          });
         },
-        {
-          "kode": "Otto Clay",
-          "nama": "61",
-          "manager": "6",
-          "group": "Ap #897-1459 Quam Avenue",
-          "show": "false"
-        },
-        {
-          "kode": "Otto Clay",
-          "nama": "61",
-          "manager": "6",
-          "group": "Ap #897-1459 Quam Avenue",
-          "show": "false"
-        },
-        {
-          "kode": "Otto Clay",
-          "nama": "61",
-          "manager": "6",
-          "group": "Ap #897-1459 Quam Avenue",
-          "show": "false"
-        },
-        {
-          "kode": "Otto Clay",
-          "nama": "61",
-          "manager": "6",
-          "group": "Ap #897-1459 Quam Avenue",
-          "show": "false"
-        },{
-          "kode": "Otto Clay",
-          "nama": "61",
-          "manager": "6",
-          "group": "Ap #897-1459 Quam Avenue",
-          "show": "false"
-        },{
-          "kode": "Otto Clay",
-          "nama": "61",
-          "manager": "6",
-          "group": "Ap #897-1459 Quam Avenue",
-          "show": "false"
-        }
-      ],
+      },
+
+      data: data,
 
       fields: [
         { name: "kode", type: "text", width: 50 },
         { name: "nama", type: "text", width: 150 },
         { name: "manager", type: "text", width: 200 },
-        { name: "group", type: "text", width: 200 },
         { name: "show", type: "text", width: 200 }
       ]
     });
