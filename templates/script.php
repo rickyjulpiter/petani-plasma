@@ -75,6 +75,17 @@
   //   });
   // }
 
+  // function copy() {
+  //   var db = firebase.firestore();
+  //   var data = [];
+  //   var collect = db.collection("kapling").doc("klb-3-32-1");
+  //   collect.get().then(function (doc) {
+  //     data.push(doc.data());
+  //     console.log(data[0]);
+  //     db.collection("kapling").add(data[0]);
+  //   });
+  // }
+
   function logout() {
     firebase.auth().signOut().then(function() {
       // Sign-out successful.

@@ -56,50 +56,22 @@
 <?php include '../templates/script.php'; ?>
 <!-- page script -->
 <script>
-  // $(function() {
-  //
-  //   $("#jsGrid").jsGrid({
-  //     height: "100%",
-  //     width: "100%",
-  //
-  //     filtering: true,
-  //     editing: true,
-  //     sorting: true,
-  //     paging: true,
-  //     autoload: true,
-  //
-  //     pageSize: 15,
-  //     pageButtonCount: 5,
-  //
-  //     deleteConfirm: "Do you really want to delete the client?",
-  //
-  //     controller: db,
-  //
-  //     fields: [
-  //       { name: "Kode", type: "text", width: 150 },
-  //       { name: "Nama", type: "number", width: 50 },
-  //       { name: "Manager", type: "text", width: 200 },
-  //       { name: "Group", type: "select", items: db.countries, valueField: "Id", textField: "Name" },
-  //       { name: "Married", type: "checkbox", title: "Is Married", sorting: false },
-  //       { type: "control" }
-  //     ]
-  //   });
-  // });
-
   var db = firebase.firestore();
   var data = [];
+  var id = [];
   db.collection("kebun")
     .onSnapshot((querySnapshot) => {
       data = [];
       querySnapshot.forEach((doc) => {
-        temp = doc.data();
-        data.push(temp);
+        tempData = doc.data();
+        tempId = doc.id;
+        tempData['keys'] = tempId;
+        data.push(tempData);
       });
       load();
     });
 
   function load() {
-    console.log(data);
     $("#jsGrid1").jsGrid({
       height: "100%",
       width: "100%",
@@ -108,6 +80,24 @@
       editing: true,
       sorting: true,
       autoload: true,
+      //inserting: true,
+
+      // onItemUpdated: function(args) {
+      //   console.log('updated' + args.item + args.itemIndex + args.grid);
+      // },
+
+      onItemUpdating: async function(args) {
+        args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        await db.collection("kebun").doc(args.previousItem.keys)
+          .update(args.item)
+          .then(function () {
+            console.log('Data Update ' + args.item.kode + ' Success');
+          }).catch(function (error) {
+            console.log("Error updating document: ", error);
+            alert('Data bermasalah');
+          });
+
+      },
 
       controller: {
         loadData: function(filter) {
@@ -115,18 +105,30 @@
             return (!filter.kode || client.kode.indexOf(filter.kode) > -1)
               && (!filter.nama || client.nama.indexOf(filter.nama) > -1)
               && (!filter.manager || client.manager.indexOf(filter.manager) > -1)
-              && (!filter.show || client.show.indexOf(filter.show) > -1)
+              && (!filter.kelompok || client.kelompok.indexOf(filter.kelompok) > -1)
+              && (filter.master === undefined || client.master === filter.master);
           });
+        },
+
+        insertItem: function(insertingClient) {
+          data.push(insertingClient);
+          console.log(data);
+        },
+
+        updateItem: function(updatingClient) {
+          console.log('Updated');
         },
       },
 
       data: data,
 
       fields: [
-        { name: "kode", type: "text", width: 50 },
-        { name: "nama", type: "text", width: 150 },
-        { name: "manager", type: "text", width: 200 },
-        { name: "show", type: "text", width: 200 }
+        { name: "kode", title: "Kode", type: "text", width: 100, editing: false },
+        { name: "nama", title: "Nama", type: "text", width: 300, editing: false },
+        { name: "manager", title: "Manager", type: "text", width: 300 },
+        { name: "kelompok", title: "Group", type: "text", width: 100 },
+        { name: "master", title: "Show", type: "checkbox", width: 50 },
+        { type: "control" , deleteButton: false}
       ]
     });
   }

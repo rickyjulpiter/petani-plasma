@@ -82,6 +82,14 @@
 <!--            </p>-->
 <!--          </a>-->
 <!--        </li>-->
+        <li class="nav-item">
+          <a href="#" class="nav-link" onclick="copy()">
+            <i class="nav-icon fas fa-sign-out-alt"></i>
+            <p>
+              Copy Data
+            </p>
+          </a>
+        </li>
       </ul>
     </nav>
     <!-- /.sidebar-menu -->
