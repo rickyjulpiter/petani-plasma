@@ -84,6 +84,7 @@
 
       onItemUpdating: async function(args) {
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        delete args.item['keys'];
         await db.collection("kapling").doc(args.previousItem.keys)
           .update(args.item)
           .then(function () {
