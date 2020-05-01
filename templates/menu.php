@@ -47,19 +47,19 @@
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="../master/kud.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>KUD</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="../master/kt.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>KT</p>
               </a>
             </li>
             <li class="nav-item">
-              <a href="#" class="nav-link">
+              <a href="../master/kapling.php" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Kapling</p>
               </a>
@@ -82,14 +82,14 @@
 <!--            </p>-->
 <!--          </a>-->
 <!--        </li>-->
-        <li class="nav-item">
-          <a href="#" class="nav-link" onclick="copy()">
-            <i class="nav-icon fas fa-sign-out-alt"></i>
-            <p>
-              Copy Data
-            </p>
-          </a>
-        </li>
+<!--        <li class="nav-item">-->
+<!--          <a href="#" class="nav-link" onclick="copy()">-->
+<!--            <i class="nav-icon fas fa-sign-out-alt"></i>-->
+<!--            <p>-->
+<!--              Copy Data-->
+<!--            </p>-->
+<!--          </a>-->
+<!--        </li>-->
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

@@ -75,16 +75,20 @@
   //   });
   // }
 
-  // function copy() {
-  //   var db = firebase.firestore();
-  //   var data = [];
-  //   var collect = db.collection("kapling").doc("klb-3-32-1");
-  //   collect.get().then(function (doc) {
-  //     data.push(doc.data());
-  //     console.log(data[0]);
-  //     db.collection("kapling").add(data[0]);
-  //   });
-  // }
+  function copy() {
+    var db = firebase.firestore();
+    db.collection("kapling").add({
+      kode: "00004",
+      nama_petani: "Abdul",
+      no_kontak: "",
+      kt: "32",
+      kud: "003",
+      kebun: "KLB",
+      master: true
+    }).then(function () {
+      alert("SS");
+    });
+  }
 
   function logout() {
     firebase.auth().signOut().then(function() {
