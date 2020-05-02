@@ -100,10 +100,10 @@
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
-            return (!filter.kode || client.kode.indexOf(filter.kode) > -1)
-              && (!filter.nama || client.nama.indexOf(filter.nama) > -1)
-              && (!filter.manager || client.manager.indexOf(filter.manager) > -1)
-              && (!filter.kelompok || client.kelompok.indexOf(filter.kelompok) > -1)
+            return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
+              && (!filter.nama.toLowerCase() || client.nama.toLowerCase().indexOf(filter.nama.toLowerCase()) > -1)
+              && (!filter.manager.toLowerCase() || client.manager.toLowerCase().indexOf(filter.manager.toLowerCase()) > -1)
+              && (!filter.kelompok.toLowerCase() || client.kelompok.toLowerCase().indexOf(filter.kelompok.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
         },

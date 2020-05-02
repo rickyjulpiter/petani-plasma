@@ -99,13 +99,13 @@
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
-            return (!filter.kode || client.kode.indexOf(filter.kode) > -1)
-              && (!filter.nama_kelompok_tani || client.nama_kelompok_tani.indexOf(filter.nama_kelompok_tani) > -1)
-              && (!filter.kud || client.kud.indexOf(filter.kud) > -1)
-              && (!filter.kebun || client.kebun.indexOf(filter.kebun) > -1)
-              && (!filter.kemitraan || client.kemitraan.indexOf(filter.kemitraan) > -1)
-              && (!filter.hubungan_komunikasi || client.hubungan_komunikasi.indexOf(filter.hubungan_komunikasi) > -1)
-              && (!filter.nama_ketua || client.nama_ketua.indexOf(filter.nama_ketua) > -1)
+            return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
+              && (!filter.nama_kelompok_tani.toLowerCase() || client.nama_kelompok_tani.toLowerCase().indexOf(filter.nama_kelompok_tani.toLowerCase()) > -1)
+              && (!filter.kud.toLowerCase() || client.kud.toLowerCase().indexOf(filter.kud.toLowerCase()) > -1)
+              && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
+              && (!filter.kemitraan.toLowerCase() || client.kemitraan.toLowerCase().indexOf(filter.kemitraan.toLowerCase()) > -1)
+              && (!filter.hubungan_komunikasi.toLowerCase() || client.hubungan_komunikasi.toLowerCase().indexOf(filter.hubungan_komunikasi.toLowerCase()) > -1)
+              && (!filter.nama_ketua.toLowerCase() || client.nama_ketua.toLowerCase().indexOf(filter.nama_ketua.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
         },

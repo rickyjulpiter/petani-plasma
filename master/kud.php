@@ -99,18 +99,18 @@
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
-            return (!filter.kode || client.kode.indexOf(filter.kode) > -1)
-              && (!filter.nama_koperasi || client.nama_koperasi.indexOf(filter.nama_koperasi) > -1)
-              && (!filter.hubungan_mitra || client.hubungan_mitra.indexOf(filter.hubungan_mitra) > -1)
-              && (!filter.hubungan_komunikasi || client.hubungan_komunikasi.indexOf(filter.hubungan_komunikasi) > -1)
-              && (!filter.nama_ketua || client.nama_ketua.indexOf(filter.nama_ketua) > -1)
-              && (!filter.no_kontak_ketua || client.no_kontak_ketua.indexOf(filter.no_kontak_ketua) > -1)
-              && (!filter.nama_sekretaris || client.nama_sekretaris.indexOf(filter.nama_sekretaris) > -1)
-              && (!filter.no_kontak_sekretaris || client.no_kontak_sekretaris.indexOf(filter.no_kontak_sekretaris) > -1)
-              && (!filter.nama_bendahara || client.nama_bendahara.indexOf(filter.nama_bendahara) > -1)
-              && (!filter.no_kontak_bendahara || client.no_kontak_bendahara.indexOf(filter.no_kontak_bendahara) > -1)
-              && (!filter.keterangan || client.keterangan.indexOf(filter.keterangan) > -1)
-              && (!filter.kebun || client.kebun.indexOf(filter.kebun) > -1)
+            return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
+              && (!filter.nama_koperasi.toLowerCase() || client.nama_koperasi.toLowerCase().indexOf(filter.nama_koperasi.toLowerCase()) > -1)
+              && (!filter.hubungan_mitra.toLowerCase() || client.hubungan_mitra.toLowerCase().indexOf(filter.hubungan_mitra.toLowerCase()) > -1)
+              && (!filter.hubungan_komunikasi.toLowerCase() || client.hubungan_komunikasi.toLowerCase().indexOf(filter.hubungan_komunikasi.toLowerCase()) > -1)
+              && (!filter.nama_ketua.toLowerCase() || client.nama_ketua.toLowerCase().indexOf(filter.nama_ketua.toLowerCase()) > -1)
+              && (!filter.no_kontak_ketua.toLowerCase() || client.no_kontak_ketua.toLowerCase().indexOf(filter.no_kontak_ketua.toLowerCase()) > -1)
+              && (!filter.nama_sekretaris.toLowerCase() || client.nama_sekretaris.toLowerCase().indexOf(filter.nama_sekretaris.toLowerCase()) > -1)
+              && (!filter.no_kontak_sekretaris.toLowerCase() || client.no_kontak_sekretaris.toLowerCase().indexOf(filter.no_kontak_sekretaris.toLowerCase()) > -1)
+              && (!filter.nama_bendahara.toLowerCase() || client.nama_bendahara.toLowerCase().indexOf(filter.nama_bendahara.toLowerCase()) > -1)
+              && (!filter.no_kontak_bendahara.toLowerCase() || client.no_kontak_bendahara.toLowerCase().indexOf(filter.no_kontak_bendahara.toLowerCase()) > -1)
+              && (!filter.keterangan.toLowerCase() || client.keterangan.toLowerCase().indexOf(filter.keterangan.toLowerCase()) > -1)
+              && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
         },

@@ -99,12 +99,12 @@
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
-            return (!filter.kode || client.kode.indexOf(filter.kode) > -1)
-              && (!filter.nama_petani || client.nama_petani.indexOf(filter.nama_petani) > -1)
-              && (!filter.no_kontak || client.no_kontak.indexOf(filter.no_kontak) > -1)
-              && (!filter.kt || client.kt.indexOf(filter.kt) > -1)
-              && (!filter.kud || client.kud.indexOf(filter.kud) > -1)
-              && (!filter.kebun || client.kebun.indexOf(filter.kebun) > -1)
+            return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
+              && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
+              && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1)
+              && (!filter.kt.toLowerCase() || client.kt.toLowerCase().indexOf(filter.kt.toLowerCase()) > -1)
+              && (!filter.kud.toLowerCase() || client.kud.toLowerCase().indexOf(filter.kud.toLowerCase()) > -1)
+              && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
         },
