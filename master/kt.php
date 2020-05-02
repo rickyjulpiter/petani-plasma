@@ -53,8 +53,13 @@
 </div>
 <!-- ./wrapper -->
 
-<?php include '../templates/script.php'; ?>
 <!-- page script -->
+<?php include '../templates/script.php'; ?>
+<script type="text/javascript">
+  window.onload = function() {
+    initApp();
+  };
+</script>
 <script>
   var db = firebase.firestore();
   var data = [];
