@@ -34,6 +34,9 @@
       <div class="card">
         <!-- /.card-header -->
         <div class="card-body">
+          <div id="spinner" style="text-align:center;">
+            <span>Data Loading </span><i class="fas fa-circle-notch fa-spin"></i>
+          </div>
           <div id="jsGrid1"></div>
         </div>
         <!-- /.card-body -->
@@ -77,6 +80,7 @@
     });
 
   function load() {
+    $("#spinner").remove();
     $("#jsGrid1").jsGrid({
       height: "100%",
       width: "100%",
