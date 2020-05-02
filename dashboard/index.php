@@ -2,7 +2,10 @@
 <html>
 <?php include '../templates/header.php'; ?>
 <body class="hold-transition sidebar-mini layout-fixed">
-<div class="wrapper">
+<div id="spinnerContent">
+  <i class="fas fa-circle-notch fa-spin"></i>
+</div>
+<div class="wrapper" id="content" hidden>
 
   <!-- Navbar -->
   <?php include '../templates/navbar.php'; ?>

@@ -108,8 +108,8 @@
     firebase.auth().onAuthStateChanged(function(user) {
       if (user) {
         // User is signed in.
-        //document.getElementById("preloader").style.display="none";
-        document.getElementById("mainContent").style.display="block";
+        $("#spinnerContent").remove();
+        $("#content").removeAttr('hidden');
       } else {
         // No user is signed in.
         window.location.assign("../login");
