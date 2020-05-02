@@ -80,7 +80,7 @@
       editing: true,
       sorting: true,
       autoload: true,
-      inserting: true,
+      //inserting: true,
 
 
       onItemUpdating: async function(args) {
