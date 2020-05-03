@@ -29,4 +29,9 @@
   <!-- jsGrid -->
   <link rel="stylesheet" href="../plugins/jsgrid/jsgrid.min.css">
   <link rel="stylesheet" href="../plugins/jsgrid/jsgrid-theme.min.css">
+  <!-- Select2 -->
+  <link rel="stylesheet" href="../plugins/select2/css/select2.min.css">
+  <link rel="stylesheet" href="../plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
+  <!-- Datetime Picker -->
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/smoothness/jquery-ui.css">
 </head>

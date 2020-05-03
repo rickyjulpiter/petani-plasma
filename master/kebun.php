@@ -138,7 +138,7 @@
         { name: "manager", title: "Manager", type: "text", width: 300, validate: "required" },
         { name: "kelompok", title: "Group", type: "text", width: 100 },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
-        { type: "control" , deleteButton: false}
+        { type: "control" , deleteButton: false }
       ]
     });
   }
