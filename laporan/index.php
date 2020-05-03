@@ -273,7 +273,6 @@
       autoload: true,
       //inserting: true,
 
-
       onItemUpdating: async function(args) {
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         delete args.item['keys'];
@@ -325,7 +324,7 @@
         { name: "pendapat", title: "Pendapat petani", type: "text", width: 120 },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
         { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
-        { type: "control" , deleteButton: false }
+        { type: "control", deleteButton: false}
       ]
     });
   }

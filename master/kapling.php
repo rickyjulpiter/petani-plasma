@@ -92,7 +92,7 @@
       editing: true,
       sorting: true,
       autoload: true,
-      //inserting: true,
+      inserting: true,
 
       onItemUpdating: async function(args) {
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
@@ -105,7 +105,19 @@
             console.log("Error updating document: ", error);
             alert('Data bermasalah');
           });
+      },
 
+      onItemInserting: async function(args) {
+        args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        delete args.item['keys'];
+        await db.collection("kapling")
+          .add(args.item)
+          .then(function () {
+            console.log("Berhasil ditambahkan");
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
       },
 
       controller: {
@@ -120,28 +132,19 @@
               && (filter.master === undefined || client.master === filter.master);
           });
         },
-
-        insertItem: function(insertingClient) {
-          data.push(insertingClient);
-          console.log(data);
-        },
-
-        updateItem: function(updatingClient) {
-          console.log('Updated');
-        },
       },
 
       data: data,
 
       fields: [
-        { name: "kode", title: "Kode", type: "text", width: 60, editing: false },
+        { name: "kode", title: "Kode", type: "text", width: 60, editing: false, validate: "required" },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 150, validate: "required" },
-        { name: "no_kontak", title: "No Kontak Petani", type: "text", width: 150 },
-        { name: "kt", title: "KT", type: "text", width: 60, editing: false },
-        { name: "kud", title: "KUD", type: "text", width: 60,  editing: false },
-        { name: "kebun", title: "Kebun", type: "text", width: 60,  editing: false },
+        { name: "no_kontak", title: "No Kontak Petani", type: "text", width: 150, validate: "required" },
+        { name: "kt", title: "KT", type: "text", width: 60, editing: false, validate: "required" },
+        { name: "kud", title: "KUD", type: "text", width: 60,  editing: false, validate: "required" },
+        { name: "kebun", title: "Kebun", type: "text", width: 60,  editing: false, validate: "required" },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
-        { type: "control" , deleteButton: false}
+        { type: "control", deleteButton: false}
       ]
     });
   }

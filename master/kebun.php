@@ -92,7 +92,7 @@
       editing: true,
       sorting: true,
       autoload: true,
-      //inserting: true,
+      inserting: true,
 
 
       onItemUpdating: async function(args) {
@@ -109,6 +109,19 @@
 
       },
 
+      onItemInserting: async function(args) {
+        args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        delete args.item['keys'];
+        await db.collection("kebun")
+          .add(args.item)
+          .then(function () {
+            console.log("Berhasil ditambahkan");
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+      },
+
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
@@ -118,27 +131,18 @@
               && (!filter.kelompok.toLowerCase() || client.kelompok.toLowerCase().indexOf(filter.kelompok.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
-        },
-
-        insertItem: function(insertingClient) {
-          data.push(insertingClient);
-          console.log(data);
-        },
-
-        updateItem: function(updatingClient) {
-          console.log('Updated');
-        },
+        }
       },
 
       data: data,
 
       fields: [
-        { name: "kode", title: "Kode", type: "text", width: 100, editing: false },
-        { name: "nama", title: "Nama", type: "text", width: 300, editing: false },
+        { name: "kode", title: "Kode", type: "text", width: 100, editing: false, validate: "required" },
+        { name: "nama", title: "Nama", type: "text", width: 300, editing: false, validate: "required" },
         { name: "manager", title: "Manager", type: "text", width: 300, validate: "required" },
-        { name: "kelompok", title: "Group", type: "text", width: 100 },
+        { name: "kelompok", title: "Group", type: "text", width: 100, validate: "required" },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
-        { type: "control" , deleteButton: false }
+        { type: "control", deleteButton: false }
       ]
     });
   }
