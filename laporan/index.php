@@ -262,6 +262,7 @@
   })
 
   function load() {
+    console.log(data);
     $("#jsGrid1").jsGrid({
       height: "100%",
       width: "100%",
@@ -276,10 +277,10 @@
       onItemUpdating: async function(args) {
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         delete args.item['keys'];
-        await db.collection("kebun").doc(args.previousItem.keys)
+        await db.collection("report").doc(args.previousItem.keys)
           .update(args.item)
           .then(function () {
-            console.log('Data Update ' + args.item.kapling + ' Success');
+            console.log('Data update berhasil');
           }).catch(function (error) {
             console.log("Error updating document: ", error);
             alert('Data bermasalah');
