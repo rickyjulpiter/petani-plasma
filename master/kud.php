@@ -112,13 +112,26 @@
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         delete args.item['keys'];
         await db.collection("kud")
-          .add(args.item)
-          .then(function () {
-            console.log("Berhasil ditambahkan");
+          .where("kode", "==", args.item.kode)
+          .get()
+          .then(function (querySnapshot) {
+            isEmpty = querySnapshot.empty;
           })
           .catch(function (error) {
             console.error(error);
           });
+        if(isEmpty){
+          await db.collection("kud")
+            .add(args.item)
+            .then(function () {
+              console.log("Berhasil ditambahkan");
+            })
+            .catch(function (error) {
+              console.error(error);
+            });
+        } else {
+          alert("Kode sudah terdaftar");
+        }
       },
 
       controller: {
