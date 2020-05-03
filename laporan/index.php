@@ -48,12 +48,6 @@
                 <label>Kebun</label>
                 <select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
                   <option selected="selected" value="" disabled></option>
-                  <option value="KLB">KLB</option>
-                  <option value="KLM">KLM</option>
-                  <option value="KLO">KLO</option>
-                  <option value="KLP">KLP</option>
-                  <option value="KLT">KLT</option>
-                  <option value="KLU">KLU</option>
                 </select>
               </div>
               <!-- /.form-group -->
@@ -150,6 +144,17 @@
     return [true, ''];
   }
 
+  db.collection("kebun")
+    .orderBy("kode")
+    .get().then((querySnapshot) => {
+    optionList = '';
+    optionList += '<option value="" selected="selected" disabled></option>';
+    querySnapshot.forEach((doc) => {
+      optionList += '<option value="' + doc.data().kode + '">' + doc.data().kode + '</option>';
+    });
+    $('#kebunSelect').append(optionList);
+  })
+
   $('#kebunSelect').on('change', function() {
     console.log("kebun onChange " + this.value);
     selectedOptionKebun = this.value;
@@ -158,6 +163,7 @@
     $('#kudSpinner').removeAttr('hidden');
     db.collection("report")
       .where("kebun", "==", selectedOptionKebun)
+      .orderBy("kud")
       .get().then((querySnapshot) => {
         $('#kudSelect').empty();
         $('#ktSelect').empty();
@@ -192,6 +198,7 @@
     db.collection("report")
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
+      .orderBy("kt")
       .get().then((querySnapshot) => {
         $('#ktSelect').empty();
         $("#tanggalPicker").datepicker("refresh");
