@@ -112,6 +112,8 @@
         delete args.item['keys'];
         await db.collection("kt")
           .where("kode", "==", args.item.kode)
+          .where("kud", "==", args.item.kud)
+          .where("kebun", "==", args.item.kebun)
           .get()
           .then(function (querySnapshot) {
             isEmpty = querySnapshot.empty;

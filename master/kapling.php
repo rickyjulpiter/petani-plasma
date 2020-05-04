@@ -112,6 +112,9 @@
         delete args.item['keys'];
         await db.collection("kapling")
           .where("kode", "==", args.item.kode)
+          .where("kt", "==", args.item.kt)
+          .where("kud", "==", args.item.kud)
+          .where("kebun", "==", args.item.kebun)
           .get()
           .then(function (querySnapshot) {
             isEmpty = querySnapshot.empty;

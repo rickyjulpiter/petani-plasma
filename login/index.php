@@ -47,15 +47,6 @@
 <?php include '../templates/script.php'; ?>
 
 <script type="text/javascript">
-  // window.onload = function() {
-  //   firebase.auth().onAuthStateChanged(function(user) {
-  //     if (user) {
-  //       // User is signed in.
-  //       window.location.assign("../index.php");
-  //     }
-  //   });
-  // };
-
   function login() {
     var email = document.getElementById("Username_field").value;
     var password = document.getElementById("Password_field").value;
@@ -64,10 +55,8 @@
       .then(function(result) {
         var role = result.user.displayName;
         if (role === 'Admin') {
-          console.log('admin 1');
           window.location.assign("../dashboard/");
         } else {
-          console.log('not admin 1');
           firebase.auth().signOut().then(function() {
             // Sign-out successful.
             window.alert("Kamu tidak memiliki akses");
