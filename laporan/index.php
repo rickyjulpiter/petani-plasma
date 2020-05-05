@@ -46,7 +46,7 @@
             <div class="col-md-4">
               <div class="form-group">
                 <label>Kebun</label>
-                <select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
+                <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
                   <option selected="selected" value="" disabled></option>
                 </select>
               </div>
@@ -54,15 +54,7 @@
               <div class="form-group">
                 <label>KUD</label>
                 <i class="fas fa-circle-notch fa-spin" id="kudSpinner" hidden></i>
-                <select class="form-control select2bs4"id="kudSelect" style="width: 100%;" data-placeholder="KUD">
-                  <option selected="selected" value="" disabled></option>
-                </select>
-              </div>
-              <!-- /.form-group -->
-              <div class="form-group">
-                <label>KT</label>
-                <i class="fas fa-circle-notch fa-spin" id="ktSpinner" hidden></i>
-                <select class="form-control select2bs4" id="ktSelect" style="width: 100%;" data-placeholder="KT">
+                <label for="kudSelect"></label><select class="form-control select2bs4" id="kudSelect" style="width: 100%;" data-placeholder="KUD">
                   <option selected="selected" value="" disabled></option>
                 </select>
               </div>
@@ -71,15 +63,18 @@
             <div class="col-md-2"></div>
             <div class="col-md-4">
               <div class="form-group">
-                <label>Tanggal kunjungan</label>
-                <i class="fas fa-circle-notch fa-spin" id="tanggalSpinner" hidden></i>
-                <input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPicker">
-                <span class="text-sm">*Note: Tanggal yang tidak ditandai berarti kosong</span>
+                <label>KT</label>
+                <i class="fas fa-circle-notch fa-spin" id="ktSpinner" hidden></i>
+                <label for="ktSelect"></label><select class="form-control select2bs4" id="ktSelect" style="width: 100%;" data-placeholder="KT">
+                  <option selected="selected" value="" disabled></option>
+                </select>
               </div>
               <!-- /.form-group -->
               <div class="form-group">
-                <label>Keterangan</label>
-                <textarea class="form-control" rows="4" placeholder="Keterangan"></textarea>
+                <label>Tanggal kunjungan</label>
+                <i class="fas fa-circle-notch fa-spin" id="tanggalSpinner" hidden></i>
+                <label for="tanggalPicker"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPicker">
+                <span class="text-sm">*Note: Tanggal yang tidak ditandai berarti kosong</span>
               </div>
               <!-- /.form-group -->
             </div>
@@ -87,6 +82,13 @@
           <div id="jsGrid1"></div>
         </div>
         <!-- /.card-body -->
+      </div>
+      <!-- /.card -->
+      <div class="card">
+        <div class="card-body">
+          <div id="mapid" style="height: 500px;"></div>
+        </div>
+        <!-- /.card-body-->
       </div>
       <!-- /.card -->
     </section>
@@ -114,10 +116,7 @@
   $('.select2bs4').select2({
     theme: 'bootstrap4'
   })
-</script>
 
-<!-- onChange Script -->
-<script>
   var db = firebase.firestore();
   var optionList;
   var index;
@@ -153,6 +152,7 @@
       optionList += '<option value="' + doc.data().kode + '">' + doc.data().kode + '</option>';
     });
     $('#kebunSelect').append(optionList);
+    mymap.invalidateSize();
   })
 
   $('#kebunSelect').on('change', function() {
@@ -335,6 +335,28 @@
       ]
     });
   }
+
+  var mymap = L.map('mapid', {
+    center: [-0.7893, 113.9213],
+    zoom: 5
+  });
+
+  L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+    attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+    maxZoom: 18,
+    id: 'mapbox/streets-v11',
+    tileSize: 512,
+    zoomOffset: -1,
+    accessToken: 'pk.eyJ1IjoidWx0cmFleHAiLCJhIjoiY2s5dTFvN3I0MWphdzNpcXBkbGxrbWM1diJ9.LjWgAXr8Ol3byKAK5pd-Lg'
+  }).addTo(mymap);
+
+  var marker = L.marker([-6.2088, 106.8456]).addTo(mymap);
+  marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
+  var marker = L.marker([3.5952, 98.6722]).addTo(mymap);
+  marker.bindPopup("<b>Hello world2!</b><br>I am a popup.");
+
+
+
 </script>
 </body>
 </html>

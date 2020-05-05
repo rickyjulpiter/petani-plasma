@@ -35,6 +35,10 @@
 <script src="../plugins/jsgrid/jsgrid.min.js"></script>
 <!-- Select2 -->
 <script src="../plugins/select2/js/select2.full.min.js"></script>
+<!-- Leafletjs -->
+<script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
+        integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
+        crossorigin=""></script>
 
 
 <!-- The core Firebase JS SDK is always required and must be listed first -->
