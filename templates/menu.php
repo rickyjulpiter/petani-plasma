@@ -31,13 +31,28 @@
             </p>
           </a>
         </li>
-        <li class="nav-item">
-          <a href="../laporan" class="nav-link">
-            <i class="nav-icon fas fa-file-alt"></i>
+        <li class="nav-item has-treeview">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-users-cog"></i>
             <p>
               Laporan
+              <i class="right fas fa-angle-left"></i>
             </p>
           </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="../laporan" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Laporan Staff Kerja</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="../laporanPembinaan" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Laporan Pembinaan </p>
+              </a>
+            </li>
+          </ul>
         </li>
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
