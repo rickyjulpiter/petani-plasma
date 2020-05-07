@@ -128,6 +128,7 @@
   var data = [];
   var mapInit = true;
   var layerGroup = L.layerGroup();
+  var selectedDateTomorrow = new Date();
 
   $("#tanggalPicker").datepicker({
     changeMonth: true,
@@ -260,8 +261,8 @@
 
   $('#tanggalPicker').on('change', function() {
     selectedDate = $("#tanggalPicker").datepicker("getDate");
-    var selectedDateTomorrow = new Date();
     selectedDateTomorrow.setDate(selectedDate.getDate() + 1);
+    selectedDateTomorrow.setHours(0, 0, 0, 0);
 
     if (mapInit) {
       $('#mapCard').removeAttr('hidden');
@@ -288,7 +289,7 @@
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
       .where("kt", "==", selectedOptionKt)
-      .where("create_at", ">=", selectedDate).where("create_at", "<=", selectedDateTomorrow)
+      .where("create_at", ">=", selectedDate).where("create_at", "<", selectedDateTomorrow)
       .orderBy("create_at")
       .onSnapshot((querySnapshot) => {
         data = [];

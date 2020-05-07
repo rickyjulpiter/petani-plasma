@@ -128,6 +128,7 @@
   var data = [];
   var mapInit = true;
   var layerGroup = L.layerGroup();
+  var selectedDateTomorrow = new Date();
 
   $("#tanggalPicker").datepicker({
     changeMonth: true,
@@ -260,8 +261,8 @@
 
   $('#tanggalPicker').on('change', function() {
     selectedDate = $("#tanggalPicker").datepicker("getDate");
-    var selectedDateTomorrow = new Date();
     selectedDateTomorrow.setDate(selectedDate.getDate() + 1);
+    selectedDateTomorrow.setHours(0, 0, 0, 0);
 
     if (mapInit) {
       $('#mapCard').removeAttr('hidden');
@@ -334,7 +335,7 @@
           return $.grep(data, function(client) {
             return (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
               && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
-              && (!filter.tipe.toLowerCase() || client.tipe.toLowerCase().indexOf(filter.tipe.toLowerCase()) > -1)
+              && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
               && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
               && (!filter.pendapat.toLowerCase() || client.pendapat.toLowerCase().indexOf(filter.pendapat.toLowerCase()) > -1)
               && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
@@ -361,7 +362,7 @@
         { name: "tanggal", title: "Kode", type: "text", width: 100, editing: false, visible: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100 },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-        { name: "tipe", title: "Type", type: "text", width: 40, validate: "required" },
+        { name: "prioritas", title: "Type", type: "text", width: 40, validate: "required" },
         { name: "saran", title: "Saran", type: "text", width: 120 },
         { name: "pendapat", title: "Pendapat petani", type: "text", width: 120 },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
