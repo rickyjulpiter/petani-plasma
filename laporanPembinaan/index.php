@@ -296,15 +296,8 @@
           const tempData = doc.data();
           tempData['keys'] = doc.id;
           data.push(tempData);
-          var circle = L.circle([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long], {
-            color: 'red',
-            fillColor: '#f03',
-            fillOpacity: 0.5,
-            radius: 100
-          }).addTo(layerGroup);
-          circle.bindPopup("<b>Kapling</b><br>" + doc.data().kapling + "</br>");
-          // var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
-          // marker.bindPopup("<b>Kapling</b><br>" + doc.data().kapling + "</br>");
+          var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+          marker.bindPopup("<b>Kapling</b><br>" + doc.data().kapling + "</br>");
         });
         load();
       })
