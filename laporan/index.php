@@ -179,19 +179,35 @@
         if (!mapInit) {
           layerGroup.clearLayers();
         }
-        optionList = '';
-        optionList += '<option value="" selected="selected" disabled></option>';
         index = [];
+        if(!querySnapshot.size){
+          optionList = '';
+          $('#kudSpinner').attr('hidden', '');
+          $('#ktSpinner').attr('hidden', '');
+          $('#tanggalSpinner').attr('hidden', '');
+          $('#kudSelect').append(optionList);
+        }
         querySnapshot.forEach((doc) => {
           if (!index.includes(doc.data().kud)) {
             index.push(doc.data().kud);
-            optionList += '<option value="' + doc.data().kud + '">' + doc.data().kud + '</option>';
+
+            db.collection("kud")
+              .where("kebun", "==", selectedOptionKebun)
+              .where("kode", "==", doc.data().kud)
+              .get().then((querySnapshot1) => {
+                optionList = '';
+                optionList += '<option value="" selected="selected" disabled></option>';
+                querySnapshot1.forEach((doc1) => {
+                  optionList += '<option value="' + doc.data().kud + '">' + doc1.data().nama_koperasi + '</option>';
+
+                  $('#kudSpinner').attr('hidden', '');
+                  $('#ktSpinner').attr('hidden', '');
+                  $('#tanggalSpinner').attr('hidden', '');
+                  $('#kudSelect').append(optionList);
+                })
+              })
           }
         });
-        $('#kudSpinner').attr('hidden', '');
-        $('#ktSpinner').attr('hidden', '');
-        $('#tanggalSpinner').attr('hidden', '');
-        $('#kudSelect').append(optionList);
       })
   })
 
@@ -216,18 +232,34 @@
         if (!mapInit) {
           layerGroup.clearLayers();
         }
-        optionList = '';
-        optionList += '<option value="" selected="selected" disabled></option>';
         index = [];
+        if(!querySnapshot.size){
+          optionList = '';
+          $('#ktSpinner').attr('hidden', '');
+          $('#tanggalSpinner').attr('hidden', '');
+          $('#kudSelect').append(optionList);
+        }
         querySnapshot.forEach((doc) => {
           if (!index.includes(doc.data().kt)) {
             index.push(doc.data().kt);
-            optionList += '<option value="' + doc.data().kt + '">' + doc.data().kt + '</option>';
+
+            db.collection("kt")
+              .where("kebun", "==", selectedOptionKebun)
+              .where("kud", "==", selectedOptionKud)
+              .where("kode", "==", doc.data().kt)
+              .get().then((querySnapshot1) => {
+              optionList = '';
+              optionList += '<option value="" selected="selected" disabled></option>';
+              querySnapshot1.forEach((doc1) => {
+                optionList += '<option value="' + doc.data().kt + '">' + doc1.data().nama_kelompok_tani + '</option>';
+
+                $('#ktSpinner').attr('hidden', '');
+                $('#tanggalSpinner').attr('hidden', '');
+                $('#ktSelect').append(optionList);
+              })
+            })
           }
         });
-        $('#ktSpinner').attr('hidden', '');
-        $('#tanggalSpinner').attr('hidden', '');
-        $('#ktSelect').append(optionList);
       })
   })
 
@@ -293,14 +325,30 @@
       .orderBy("create_at")
       .onSnapshot((querySnapshot) => {
         data = [];
+        var documentSize = querySnapshot.size;
+        if(!querySnapshot.size){
+          load();
+        }
         querySnapshot.forEach((doc) => {
-          const tempData = doc.data();
-          tempData['keys'] = doc.id;
-          data.push(tempData);
-          var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
-          marker.bindPopup("<b>Kapling</b><br>" + doc.data().kapling + "</br>");
+          var nama = "";
+          //fetch nama pegawai
+          db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
+            nama = doc1.data().nama_pegawai;
+            console.log(nama);
+
+            const tempData = doc.data();
+            tempData['keys'] = doc.id;
+            tempData['nama_pegawai'] = nama;
+            data.push(tempData);
+            var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+            marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
+
+            if(data.length === documentSize) {
+              console.log("load")
+              load();
+            }
+          })
         });
-        load();
       })
   })
 
@@ -319,6 +367,7 @@
       onItemUpdating: async function(args) {
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         delete args.item['keys'];
+        delete args.item['nama_pegawai'];
         await db.collection("report").doc(args.previousItem.keys)
           .update(args.item)
           .then(function () {
@@ -333,7 +382,8 @@
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
-            return (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
+            return (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
+              && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
               && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
               && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
               && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1);
@@ -353,9 +403,10 @@
       data: data,
 
       fields: [
-        { name: "kapling", title: "Kapling", type: "text", width: 100 },
+        { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
+        { name: "kapling", title: "Kapling", type: "text", width: 100, editing: false },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-        { name: "prioritas", title: "Type", type: "text", width: 40, validate: "required" },
+        { name: "prioritas", title: "Type", type: "text", width: 40 },
         { name: "saran", title: "Saran", type: "text", width: 120 },
         { type: "control", deleteButton: false}
       ]

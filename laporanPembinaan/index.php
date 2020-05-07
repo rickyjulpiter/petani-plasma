@@ -167,32 +167,48 @@
       .where("kebun", "==", selectedOptionKebun)
       .orderBy("kud")
       .get().then((querySnapshot) => {
-        $('#kudSelect').empty();
-        $('#ktSelect').empty();
-        $("#tanggalPicker").datepicker("refresh");
-        $("#tanggalPicker").datepicker("setDate", null);
-        availableDates = [];
-        if (data.length) {
-          data = [];
-          load();
-        }
-        if (!mapInit) {
-          layerGroup.clearLayers();
-        }
+      $('#kudSelect').empty();
+      $('#ktSelect').empty();
+      $("#tanggalPicker").datepicker("refresh");
+      $("#tanggalPicker").datepicker("setDate", null);
+      availableDates = [];
+      if (data.length) {
+        data = [];
+        load();
+      }
+      if (!mapInit) {
+        layerGroup.clearLayers();
+      }
+      index = [];
+      if(!querySnapshot.size){
         optionList = '';
-        optionList += '<option value="" selected="selected" disabled></option>';
-        index = [];
-        querySnapshot.forEach((doc) => {
-          if (!index.includes(doc.data().kud)) {
-            index.push(doc.data().kud);
-            optionList += '<option value="' + doc.data().kud + '">' + doc.data().kud + '</option>';
-          }
-        });
         $('#kudSpinner').attr('hidden', '');
         $('#ktSpinner').attr('hidden', '');
         $('#tanggalSpinner').attr('hidden', '');
         $('#kudSelect').append(optionList);
-      })
+      }
+      querySnapshot.forEach((doc) => {
+        if (!index.includes(doc.data().kud)) {
+          index.push(doc.data().kud);
+
+          db.collection("kud")
+            .where("kebun", "==", selectedOptionKebun)
+            .where("kode", "==", doc.data().kud)
+            .get().then((querySnapshot1) => {
+            optionList = '';
+            optionList += '<option value="" selected="selected" disabled></option>';
+            querySnapshot1.forEach((doc1) => {
+              optionList += '<option value="' + doc.data().kud + '">' + doc1.data().nama_koperasi + '</option>';
+
+              $('#kudSpinner').attr('hidden', '');
+              $('#ktSpinner').attr('hidden', '');
+              $('#tanggalSpinner').attr('hidden', '');
+              $('#kudSelect').append(optionList);
+            })
+          })
+        }
+      });
+    })
   })
 
   $('#kudSelect').on('change', function() {
@@ -205,30 +221,46 @@
       .where("kud", "==", selectedOptionKud)
       .orderBy("kt")
       .get().then((querySnapshot) => {
-        $('#ktSelect').empty();
-        $("#tanggalPicker").datepicker("refresh");
-        $("#tanggalPicker").datepicker("setDate", null);
-        availableDates = [];
-        if (data.length) {
-          data = [];
-          load();
-        }
-        if (!mapInit) {
-          layerGroup.clearLayers();
-        }
+      $('#ktSelect').empty();
+      $("#tanggalPicker").datepicker("refresh");
+      $("#tanggalPicker").datepicker("setDate", null);
+      availableDates = [];
+      if (data.length) {
+        data = [];
+        load();
+      }
+      if (!mapInit) {
+        layerGroup.clearLayers();
+      }
+      index = [];
+      if(!querySnapshot.size){
         optionList = '';
-        optionList += '<option value="" selected="selected" disabled></option>';
-        index = [];
-        querySnapshot.forEach((doc) => {
-          if (!index.includes(doc.data().kt)) {
-            index.push(doc.data().kt);
-            optionList += '<option value="' + doc.data().kt + '">' + doc.data().kt + '</option>';
-          }
-        });
         $('#ktSpinner').attr('hidden', '');
         $('#tanggalSpinner').attr('hidden', '');
-        $('#ktSelect').append(optionList);
-      })
+        $('#kudSelect').append(optionList);
+      }
+      querySnapshot.forEach((doc) => {
+        if (!index.includes(doc.data().kt)) {
+          index.push(doc.data().kt);
+
+          db.collection("kt")
+            .where("kebun", "==", selectedOptionKebun)
+            .where("kud", "==", selectedOptionKud)
+            .where("kode", "==", doc.data().kt)
+            .get().then((querySnapshot1) => {
+            optionList = '';
+            optionList += '<option value="" selected="selected" disabled></option>';
+            querySnapshot1.forEach((doc1) => {
+              optionList += '<option value="' + doc.data().kt + '">' + doc1.data().nama_kelompok_tani + '</option>';
+
+              $('#ktSpinner').attr('hidden', '');
+              $('#tanggalSpinner').attr('hidden', '');
+              $('#ktSelect').append(optionList);
+            })
+          })
+        }
+      });
+    })
   })
 
   $('#ktSelect').on('change', function() {
@@ -240,23 +272,23 @@
       .where("kud", "==", selectedOptionKud)
       .where("kt", "==", selectedOptionKt)
       .get().then((querySnapshot) => {
-        $("#tanggalPicker").datepicker("refresh");
-        $("#tanggalPicker").datepicker("setDate", null);
-        availableDates = [];
-        if (data.length) {
-          data = [];
-          load();
-        }
-        if (!mapInit) {
-          layerGroup.clearLayers();
-        }
-        querySnapshot.forEach((doc) => {
-          console.log(doc.data().create_at.seconds);
-          availableDates.push(new Date(doc.data().create_at.seconds * 1000).setHours(0, 0, 0, 0));
-          console.log(availableDates);
-        });
-        $('#tanggalSpinner').attr('hidden', '');
-      })
+      $("#tanggalPicker").datepicker("refresh");
+      $("#tanggalPicker").datepicker("setDate", null);
+      availableDates = [];
+      if (data.length) {
+        data = [];
+        load();
+      }
+      if (!mapInit) {
+        layerGroup.clearLayers();
+      }
+      querySnapshot.forEach((doc) => {
+        console.log(doc.data().create_at.seconds);
+        availableDates.push(new Date(doc.data().create_at.seconds * 1000).setHours(0, 0, 0, 0));
+        console.log(availableDates);
+      });
+      $('#tanggalSpinner').attr('hidden', '');
+    })
   })
 
   $('#tanggalPicker').on('change', function() {
@@ -289,20 +321,37 @@
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
       .where("kt", "==", selectedOptionKt)
-      .where("create_at", ">=", selectedDate).where("create_at", "<=", selectedDateTomorrow)
+      .where("create_at", ">=", selectedDate).where("create_at", "<", selectedDateTomorrow)
       .orderBy("create_at")
       .onSnapshot((querySnapshot) => {
         data = [];
+        var documentSize = querySnapshot.size;
+        if(!querySnapshot.size){
+          load();
+        }
         querySnapshot.forEach((doc) => {
-          const tempData = doc.data();
-          tempData['keys'] = doc.id;
-          data.push(tempData);
-          var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
-          marker.bindPopup("<b>Kapling</b><br>" + doc.data().kapling + "</br>");
+          var nama = "";
+          //fetch nama pegawai
+          db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
+            nama = doc1.data().nama_pegawai;
+            console.log(nama);
+
+            const tempData = doc.data();
+            tempData['keys'] = doc.id;
+            tempData['nama_pegawai'] = nama;
+            data.push(tempData);
+            var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+            marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
+
+            if(data.length === documentSize) {
+              console.log("load")
+              load();
+            }
+          })
         });
-        load();
       })
   })
+
 
   function load() {
     console.log(data);
@@ -319,6 +368,7 @@
       onItemUpdating: async function(args) {
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         delete args.item['keys'];
+        delete args.item['nama_pegawai'];
         await db.collection("report").doc(args.previousItem.keys)
           .update(args.item)
           .then(function () {
