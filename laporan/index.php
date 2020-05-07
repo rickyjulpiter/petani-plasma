@@ -84,9 +84,9 @@
         <!-- /.card-body -->
       </div>
       <!-- /.card -->
-      <div class="card">
+      <div class="card" id="mapCard" hidden>
         <div class="card-body">
-<!--          <div id="mapid" style="height: 500px;"></div>-->
+          <div id="mapid" style="height: 500px;"></div>
         </div>
         <!-- /.card-body-->
       </div>
@@ -126,6 +126,8 @@
   var availableDates = [];
   var selectedDate;
   var data = [];
+  var mapInit = true;
+  var layerGroup = L.layerGroup();
 
   $("#tanggalPicker").datepicker({
     changeMonth: true,
@@ -152,7 +154,6 @@
       optionList += '<option value="' + doc.data().kode + '">' + doc.data().kode + '</option>';
     });
     $('#kebunSelect').append(optionList);
-    // mymap.invalidateSize();
   })
 
   $('#kebunSelect').on('change', function() {
@@ -173,6 +174,9 @@
         if (data.length) {
           data = [];
           load();
+        }
+        if (!mapInit) {
+          layerGroup.clearLayers();
         }
         optionList = '';
         optionList += '<option value="" selected="selected" disabled></option>';
@@ -208,6 +212,9 @@
           data = [];
           load();
         }
+        if (!mapInit) {
+          layerGroup.clearLayers();
+        }
         optionList = '';
         optionList += '<option value="" selected="selected" disabled></option>';
         index = [];
@@ -239,6 +246,9 @@
           data = [];
           load();
         }
+        if (!mapInit) {
+          layerGroup.clearLayers();
+        }
         querySnapshot.forEach((doc) => {
           console.log(doc.data().create_at.seconds);
           availableDates.push(new Date(doc.data().create_at.seconds * 1000).setHours(0, 0, 0, 0));
@@ -250,9 +260,30 @@
 
   $('#tanggalPicker').on('change', function() {
     selectedDate = $("#tanggalPicker").datepicker("getDate");
-    console.log("tanggal onChange " + selectedDate);
     var selectedDateTomorrow = new Date();
     selectedDateTomorrow.setDate(selectedDate.getDate() + 1);
+
+    if (mapInit) {
+      $('#mapCard').removeAttr('hidden');
+      var mymap = L.map('mapid', {
+        center: [-0.7893, 113.9213],
+        zoom: 5
+      });
+      L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+        attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+        maxZoom: 18,
+        id: 'mapbox/streets-v11',
+        tileSize: 512,
+        zoomOffset: -1,
+        accessToken: 'pk.eyJ1IjoidWx0cmFleHAiLCJhIjoiY2s5dTFvN3I0MWphdzNpcXBkbGxrbWM1diJ9.LjWgAXr8Ol3byKAK5pd-Lg'
+      }).addTo(mymap);
+      layerGroup.addTo(mymap);
+      mapInit = false;
+    }
+    else {
+      layerGroup.clearLayers();
+    }
+
     db.collection("report")
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
@@ -265,7 +296,15 @@
           const tempData = doc.data();
           tempData['keys'] = doc.id;
           data.push(tempData);
-          console.log(doc.data());
+          var circle = L.circle([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5,
+            radius: 100
+          }).addTo(layerGroup);
+          circle.bindPopup("<b>Kapling</b><br>" + doc.data().kapling + "</br>");
+          // var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+          // marker.bindPopup("<b>Kapling</b><br>" + doc.data().kapling + "</br>");
         });
         load();
       })
@@ -302,11 +341,8 @@
           return $.grep(data, function(client) {
             return (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
               && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
-              && (!filter.tipe.toLowerCase() || client.tipe.toLowerCase().indexOf(filter.tipe.toLowerCase()) > -1)
-              && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
-              && (!filter.pendapat.toLowerCase() || client.pendapat.toLowerCase().indexOf(filter.pendapat.toLowerCase()) > -1)
-              && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
-              && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1);
+              && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
+              && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1);
           });
         },
 
@@ -323,43 +359,14 @@
       data: data,
 
       fields: [
-        { name: "kode", title: "Kode", type: "text", width: 100, editing: false, visible: false },
-        { name: "kud", title: "Kode", type: "text", width: 100, editing: false, visible: false },
-        { name: "kt", title: "Kode", type: "text", width: 100, editing: false, visible: false },
-        { name: "tanggal", title: "Kode", type: "text", width: 100, editing: false, visible: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100 },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-        { name: "tipe", title: "Type", type: "text", width: 40, validate: "required" },
+        { name: "prioritas", title: "Type", type: "text", width: 40, validate: "required" },
         { name: "saran", title: "Saran", type: "text", width: 120 },
-        { name: "pendapat", title: "Pendapat petani", type: "text", width: 120 },
-        { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
-        { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
         { type: "control", deleteButton: false}
       ]
     });
   }
-
-  // var mymap = L.map('mapid', {
-  //   center: [-0.7893, 113.9213],
-  //   zoom: 5
-  // });
-  //
-  // L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
-  //   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-  //   maxZoom: 18,
-  //   id: 'mapbox/streets-v11',
-  //   tileSize: 512,
-  //   zoomOffset: -1,
-  //   accessToken: 'pk.eyJ1IjoidWx0cmFleHAiLCJhIjoiY2s5dTFvN3I0MWphdzNpcXBkbGxrbWM1diJ9.LjWgAXr8Ol3byKAK5pd-Lg'
-  // }).addTo(mymap);
-  //
-  // var marker = L.marker([-6.2088, 106.8456]).addTo(mymap);
-  // marker.bindPopup("<b>Hello world!</b><br>I am a popup.");
-  // var marker = L.marker([3.5952, 98.6722]).addTo(mymap);
-  // marker.bindPopup("<b>Hello world2!</b><br>I am a popup.");
-
-
-
 </script>
 </body>
 </html>
