@@ -359,25 +359,9 @@
       width: "100%",
 
       filtering: true,
-      editing: true,
+      editing: false,
       sorting: true,
       autoload: true,
-      //inserting: true,
-
-      onItemUpdating: async function(args) {
-        args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
-        delete args.item['keys'];
-        delete args.item['nama_pegawai'];
-        await db.collection("report").doc(args.previousItem.keys)
-          .update(args.item)
-          .then(function () {
-            console.log('Data update berhasil');
-          }).catch(function (error) {
-            console.log("Error updating document: ", error);
-            alert('Data bermasalah');
-          });
-
-      },
 
       controller: {
         loadData: function(filter) {
@@ -389,15 +373,6 @@
               && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1);
           });
         },
-
-        insertItem: function(insertingClient) {
-          data.push(insertingClient);
-          console.log(data);
-        },
-
-        updateItem: function(updatingClient) {
-          console.log('Updated');
-        },
       },
 
       data: data,
@@ -406,9 +381,13 @@
         { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100, editing: false },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-        { name: "prioritas", title: "Type", type: "text", width: 40 },
+        { name: "prioritas", title: "Type", type: "text", width: 55 },
         { name: "saran", title: "Saran", type: "text", width: 120 },
-        { type: "control", deleteButton: false}
+        { name: "url_pic_hasil_kerja", title: "Foto", type: "text", width: 85, sorting: false,
+          itemTemplate: function (value, item) {
+            return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
+          }
+        }
       ]
     });
   }
