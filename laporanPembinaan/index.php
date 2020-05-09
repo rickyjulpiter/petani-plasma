@@ -283,8 +283,8 @@
         layerGroup.clearLayers();
       }
       querySnapshot.forEach((doc) => {
-        console.log(doc.data().create_at.seconds);
-        availableDates.push(new Date(doc.data().create_at.seconds * 1000).setHours(0, 0, 0, 0));
+        console.log(doc.data().updated_at_pembinaan_petani.seconds);
+        availableDates.push(new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).setHours(0, 0, 0, 0));
         console.log(availableDates);
       });
       $('#tanggalSpinner').attr('hidden', '');
@@ -321,8 +321,8 @@
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
       .where("kt", "==", selectedOptionKt)
-      .where("create_at", ">=", selectedDate).where("create_at", "<", selectedDateTomorrow)
-      .orderBy("create_at")
+      .where("updated_at_pembinaan_petani", ">=", selectedDate).where("updated_at_pembinaan_petani", "<", selectedDateTomorrow)
+      .orderBy("updated_at_pembinaan_petani")
       .onSnapshot((querySnapshot) => {
         data = [];
         var documentSize = querySnapshot.size;
@@ -340,7 +340,7 @@
             tempData['keys'] = doc.id;
             tempData['nama_pegawai'] = nama;
             data.push(tempData);
-            var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+            var marker = L.marker([doc.data().location_pembinaan_petani.lat, doc.data().location_pembinaan_petani.long]).addTo(layerGroup);
             marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
 
             if(data.length === documentSize) {
@@ -390,7 +390,7 @@
         { name: "pendapat", title: "Pendapat petani", type: "text", width: 120 },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
         { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
-        { name: "url_pic_hasil_kerja", title: "Foto", type: "text", width: 85, sorting: false,
+        { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
           itemTemplate: function (value, item) {
             return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
           }

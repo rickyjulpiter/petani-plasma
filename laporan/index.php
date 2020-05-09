@@ -283,8 +283,8 @@
           layerGroup.clearLayers();
         }
         querySnapshot.forEach((doc) => {
-          console.log(doc.data().create_at.seconds);
-          availableDates.push(new Date(doc.data().create_at.seconds * 1000).setHours(0, 0, 0, 0));
+          console.log(doc.data().updated_at_hasil_kerja.seconds);
+          availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
           console.log(availableDates);
         });
         $('#tanggalSpinner').attr('hidden', '');
@@ -321,8 +321,8 @@
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
       .where("kt", "==", selectedOptionKt)
-      .where("create_at", ">=", selectedDate).where("create_at", "<", selectedDateTomorrow)
-      .orderBy("create_at")
+      .where("updated_at_hasil_kerja", ">=", selectedDate).where("updated_at_hasil_kerja", "<", selectedDateTomorrow)
+      .orderBy("updated_at_hasil_kerja")
       .onSnapshot((querySnapshot) => {
         data = [];
         var documentSize = querySnapshot.size;
@@ -341,7 +341,7 @@
             tempData['nama_pegawai'] = nama;
             data.push(tempData);
             var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
-            marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
+            marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
 
             if(data.length === documentSize) {
               console.log("load")
