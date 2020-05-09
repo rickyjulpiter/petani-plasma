@@ -79,6 +79,9 @@
               <!-- /.form-group -->
             </div>
           </div>
+          <div id="spinner" style="text-align:center;" hidden>
+            <span>Data Loading </span><i class="fas fa-circle-notch fa-spin"></i>
+          </div>
           <div id="jsGrid1"></div>
         </div>
         <!-- /.card-body -->
@@ -86,7 +89,7 @@
       <!-- /.card -->
       <div class="card" id="mapCard" hidden>
         <div class="card-body">
-          <div id="mapid" style="height: 500px;"></div>
+          <div id="mapid" style="height: 500px; z-index: 0"></div>
         </div>
         <!-- /.card-body-->
       </div>
@@ -295,6 +298,7 @@
     selectedDate = $("#tanggalPicker").datepicker("getDate");
     selectedDateTomorrow.setDate(selectedDate.getDate() + 1);
     selectedDateTomorrow.setHours(0, 0, 0, 0);
+    $("#spinner").removeAttr("hidden");
 
     if (mapInit) {
       $('#mapCard').removeAttr('hidden');
@@ -353,6 +357,7 @@
   })
 
   function load() {
+    $("#spinner").attr("hidden", "");
     console.log(data);
     $("#jsGrid1").jsGrid({
       height: "100%",
