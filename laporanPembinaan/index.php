@@ -286,9 +286,11 @@
         layerGroup.clearLayers();
       }
       querySnapshot.forEach((doc) => {
-        console.log(doc.data().updated_at_pembinaan_petani.seconds);
-        availableDates.push(new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).setHours(0, 0, 0, 0));
-        console.log(availableDates);
+        if (doc.get('updated_at_pembinaan_petani') != null) {
+          console.log(doc.data().updated_at_pembinaan_petani.seconds);
+          availableDates.push(new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).setHours(0, 0, 0, 0));
+          console.log(availableDates);
+        }
       });
       $('#tanggalSpinner').attr('hidden', '');
     })
