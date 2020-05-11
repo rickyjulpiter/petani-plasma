@@ -5,10 +5,22 @@
   #highlight, .highlight {
     background-color: #000000;
   }
+  .center-screen {
+    margin: 0;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+  }
 </style>
 <body class="hold-transition sidebar-mini">
-<div id="spinnerContent">
-  <i class="fas fa-circle-notch fa-spin"></i>
+<div class="col-12" style="height: 100vh" id="spinnerContent">
+  <div class="center-screen">
+    <div class="spinner-grow text-dark" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
 </div>
 <div class="wrapper" id="content" hidden>
   <!-- Navbar -->
