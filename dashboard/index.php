@@ -67,7 +67,7 @@
                   <div class="icon">
                     <i class="ion ion-document"></i>
                   </div>
-                  <a href="./laporan" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="../laporan" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
@@ -82,7 +82,7 @@
                   <div class="icon">
                     <i class="ion ion-document"></i>
                   </div>
-                  <a href="./laporanPembinaan" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="../laporanPembinaan" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
@@ -107,7 +107,7 @@
                   <div class="icon">
                     <i class="ion ion-key"></i>
                   </div>
-                  <a href="./master/kebun.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="../master/kebun.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
@@ -122,7 +122,7 @@
                   <div class="icon">
                     <i class="ion ion-key"></i>
                   </div>
-                  <a href="./master/kud.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="../master/kud.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
@@ -137,7 +137,7 @@
                   <div class="icon">
                     <i class="ion ion-key"></i>
                   </div>
-                  <a href="./master/kt.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="../master/kt.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
@@ -152,7 +152,7 @@
                   <div class="icon">
                     <i class="ion ion-key"></i>
                   </div>
-                  <a href="./master/kapling.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                  <a href="../master/kapling.php" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
                 </div>
               </div>
               <!-- ./col -->
