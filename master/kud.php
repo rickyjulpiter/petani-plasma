@@ -114,9 +114,7 @@
         await db.collection("kud").doc(args.previousItem.keys)
           .update(args.item)
           .then(function () {
-            console.log('Data Update ' + args.item.kode + ' Success');
           }).catch(function (error) {
-            console.log("Error updating document: ", error);
             alert('Data bermasalah');
           });
 
@@ -133,16 +131,13 @@
             isEmpty = querySnapshot.empty;
           })
           .catch(function (error) {
-            console.error(error);
           });
         if(isEmpty){
           await db.collection("kud")
             .add(args.item)
             .then(function () {
-              console.log("Berhasil ditambahkan");
             })
             .catch(function (error) {
-              console.error(error);
             });
         } else {
           alert("Kode sudah terdaftar");

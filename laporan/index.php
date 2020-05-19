@@ -173,7 +173,6 @@
   })
 
   $('#kebunSelect').on('change', function() {
-    console.log("kebun onChange " + this.value);
     selectedOptionKebun = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
@@ -227,7 +226,6 @@
   })
 
   $('#kudSelect').on('change', function() {
-    console.log("kud onChange " + this.value);
     selectedOptionKud = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
@@ -279,7 +277,6 @@
   })
 
   $('#ktSelect').on('change', function() {
-    console.log("kt onChange " + this.value);
     selectedOptionKt = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     db.collection("report")
@@ -298,9 +295,7 @@
           layerGroup.clearLayers();
         }
         querySnapshot.forEach((doc) => {
-          console.log(doc.data().updated_at_hasil_kerja.seconds);
           availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
-          console.log(availableDates);
         });
         $('#tanggalSpinner').attr('hidden', '');
       })
@@ -350,7 +345,6 @@
           //fetch nama pegawai
           db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
             nama = doc1.data().nama_pegawai;
-            console.log(nama);
 
             const tempData = doc.data();
             tempData['keys'] = doc.id;
@@ -360,7 +354,6 @@
             marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
 
             if(data.length === documentSize) {
-              console.log("load")
               load();
             }
           })
@@ -370,7 +363,6 @@
 
   function load() {
     $("#spinner").attr("hidden", "");
-    console.log(data);
     $("#jsGrid1").jsGrid({
       height: "100%",
       width: "100%",

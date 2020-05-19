@@ -173,7 +173,6 @@
   })
 
   $('#kebunSelect').on('change', function() {
-    console.log("kebun onChange " + this.value);
     selectedOptionKebun = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
@@ -227,7 +226,6 @@
   })
 
   $('#kudSelect').on('change', function() {
-    console.log("kud onChange " + this.value);
     selectedOptionKud = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
@@ -279,7 +277,6 @@
   })
 
   $('#ktSelect').on('change', function() {
-    console.log("kt onChange " + this.value);
     selectedOptionKt = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     db.collection("report")
@@ -299,9 +296,7 @@
       }
       querySnapshot.forEach((doc) => {
         if (doc.get('updated_at_pembinaan_petani') != null) {
-          console.log(doc.data().updated_at_pembinaan_petani.seconds);
           availableDates.push(new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).setHours(0, 0, 0, 0));
-          console.log(availableDates);
         }
       });
       $('#tanggalSpinner').attr('hidden', '');
@@ -352,7 +347,6 @@
           //fetch nama pegawai
           db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
             nama = doc1.data().nama_pegawai;
-            console.log(nama);
 
             const tempData = doc.data();
             tempData['keys'] = doc.id;
@@ -362,7 +356,6 @@
             marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
 
             if(data.length === documentSize) {
-              console.log("load")
               load();
             }
           })
@@ -372,7 +365,6 @@
 
 
   function load() {
-    console.log(data);
     $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
       height: "100%",
@@ -391,7 +383,7 @@
               && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
               && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
               && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
-              && (!filter.pendapat.toLowerCase() || client.pendapat.toLowerCase().indexOf(filter.pendapat.toLowerCase()) > -1)
+              && (!filter.tanggapan.toLowerCase() || client.tanggapan.toLowerCase().indexOf(filter.tanggapan.toLowerCase()) > -1)
               && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
               && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1);
           });
@@ -406,7 +398,7 @@
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
         { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
         { name: "saran", title: "Saran", type: "text", width: 120 },
-        { name: "pendapat", title: "Pendapat petani", type: "text", width: 120 },
+        { name: "tanggapan", title: "Pendapat petani", type: "text", width: 120 },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
         { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
         { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,

@@ -68,34 +68,6 @@
 
 <!-- Authentication -->
 <script type="text/javascript">
-  // function admin() {
-  //   window.alert('test');
-  //   var user = firebase.auth().currentUser;
-  //   user.updateProfile({
-  //     displayName: 'Admin'
-  //   }).then(function () {
-  //     var displayName = user.displayName;
-  //     window.alert(displayName);
-  //   }, function (error) {
-  //     window.alert(error);
-  //   });
-  // }
-
-  function copy() {
-    var db = firebase.firestore();
-    db.collection("kapling").add({
-      kode: "00004",
-      nama_petani: "Abdul",
-      no_kontak: "",
-      kt: "32",
-      kud: "003",
-      kebun: "KLB",
-      master: true
-    }).then(function () {
-      alert("SS");
-    });
-  }
-
   function logout() {
     firebase.auth().signOut().then(function() {
       // Sign-out successful.

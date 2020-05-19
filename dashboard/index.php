@@ -189,7 +189,6 @@
 
   var today = new Date();
   today.setHours(0, 0, 0, 0);
-  console.log(today);
   var db = firebase.firestore();
   db.collection('kebun').get().then((kebunData) => $("#kebun").html(kebunData.size));
   db.collection('kud').get().then((kudData) => $("#kud").html(kudData.size));
