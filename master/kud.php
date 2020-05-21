@@ -133,6 +133,7 @@
           .catch(function (error) {
           });
         if(isEmpty){
+          args.item.master = true;
           await db.collection("kud")
             .add(args.item)
             .then(function () {

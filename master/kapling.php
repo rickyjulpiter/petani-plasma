@@ -135,6 +135,7 @@
           .catch(function (error) {
           });
         if(isEmpty){
+          args.item.master = true;
           await db.collection("kapling")
             .add(args.item)
             .then(function () {

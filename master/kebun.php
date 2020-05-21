@@ -133,9 +133,11 @@
           .catch(function (error) {
           });
         if(isEmpty) {
+          args.item.master = true;
           await db.collection("kebun")
             .add(args.item)
             .then(function () {
+              console.log(args.item);
             })
             .catch(function (error) {
             });
