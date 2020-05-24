@@ -91,6 +91,33 @@
         tempData = doc.data();
         tempId = doc.id;
         tempData['keys'] = tempId;
+
+        if(tempData['kemitraan'] === '001'){
+          tempData['kemitraan'] = 'GREEN'
+        }
+        else if(tempData['kemitraan'] === '002'){
+          tempData['kemitraan'] = 'YELLOW'
+        }
+        else if(tempData['kemitraan'] === '003'){
+          tempData['kemitraan'] = 'RED'
+        }
+        else {
+          tempData['kemitraan'] = 'ERROR'
+        }
+
+        if(tempData['hubungan_komunikasi'] === '001'){
+          tempData['hubungan_komunikasi'] = 'BAGUS'
+        }
+        else if(tempData['hubungan_komunikasi'] === '002'){
+          tempData['hubungan_komunikasi'] = 'SEDANG'
+        }
+        else if(tempData['hubungan_komunikasi'] === '003'){
+          tempData['hubungan_komunikasi'] = 'BURUK'
+        }
+        else {
+          tempData['hubungan_komunikasi'] = 'ERROR'
+        }
+
         data.push(tempData);
       });
       load();
@@ -107,40 +134,126 @@
       sorting: true,
       autoload: true,
       inserting: true,
+      paging: true,
 
       onItemUpdating: async function(args) {
+        var err = false;
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        if(args.item['kemitraan'] !== 'GREEN' && args.item['kemitraan'] !== 'YELLOW' && args.item['kemitraan'] !== 'RED') {
+          alert('Kemitraan diisi dengan GREEN / YELLOW / RED')
+          err = true;
+        }
+        if(args.item['hubungan_komunikasi'] !== 'BAGUS' && args.item['hubungan_komunikasi'] !== 'SEDANG' && args.item['hubungan_komunikasi'] !== 'BURUK') {
+          alert('Hubungan komunikasi diisi dengan BAGUS / SEDANG / BURUK')
+          err = true;
+        }
         delete args.item['keys'];
-        await db.collection("kt").doc(args.previousItem.keys)
-          .update(args.item)
-          .then(function () {
-          }).catch(function (error) {
-            alert('Data bermasalah');
-          });
+        if(!err) {
+          switch (args.item['kemitraan']) {
+            case "GREEN" :
+              args.item['kemitraan'] = '001';
+              break;
+            case "YELLOW" :
+              args.item['kemitraan'] = '002';
+              break;
+            case "RED" :
+              args.item['kemitraan'] = '003';
+              break;
+          }
+          switch (args.item['hubungan_komunikasi']) {
+            case "BAGUS" :
+              args.item['hubungan_komunikasi'] = '001';
+              break;
+            case "SEDANG" :
+              args.item['hubungan_komunikasi'] = '002';
+              break;
+            case "BURUK" :
+              args.item['hubungan_komunikasi'] = '003';
+              break;
+          }
+          await db.collection("kt").doc(args.previousItem.keys)
+            .update(args.item)
+            .then(function () {
+            }).catch(function (error) {
+              alert('Data bermasalah');
+            });
+        }
       },
 
       onItemInserting: async function(args) {
+        var err = false;
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        if(args.item['kemitraan'] !== 'GREEN' && args.item['kemitraan'] !== 'YELLOW' && args.item['kemitraan'] !== 'RED') {
+          alert('Kemitraan diisi dengan GREEN / YELLOW / RED')
+          err = true;
+        }
+        if(args.item['hubungan_komunikasi'] !== 'BAGUS' && args.item['hubungan_komunikasi'] !== 'SEDANG' && args.item['hubungan_komunikasi'] !== 'BURUK') {
+          alert('Hubungan komunikasi diisi dengan BAGUS / SEDANG / BURUK')
+          err = true;
+        }
         delete args.item['keys'];
-        await db.collection("kt")
-          .where("kode", "==", args.item.kode)
-          .where("kud", "==", args.item.kud)
+        await db.collection("kud")
+          .where("nama_koperasi", "==", args.item.nama_kud)
           .where("kebun", "==", args.item.kebun)
           .get()
           .then(function (querySnapshot) {
-            isEmpty = querySnapshot.empty;
+            isValid = !(querySnapshot.empty);
+            isEmpty = false;
+            querySnapshot.forEach((doc) => {
+              kode_kud = doc.data().kode;
+            })
           })
           .catch(function (error) {
+            alert(error);
           });
-        if(isEmpty){
+        if(isValid) {
+          await db.collection("kt")
+            .where("kode", "==", args.item.kode)
+            .where("nama_kud", "==", args.item.nama_kud)
+            .where("kebun", "==", args.item.kebun)
+            .get()
+            .then(function (querySnapshot) {
+              isEmpty = querySnapshot.empty;
+            })
+            .catch(function (error) {
+              alert(error);
+            });
+        }
+        if(isEmpty && !err && isValid){
+          switch (args.item['kemitraan']) {
+            case "GREEN" :
+              args.item['kemitraan'] = '001';
+              break;
+            case "YELLOW" :
+              args.item['kemitraan'] = '002';
+              break;
+            case "RED" :
+              args.item['kemitraan'] = '003';
+              break;
+          }
+          switch (args.item['hubungan_komunikasi']) {
+            case "BAGUS" :
+              args.item['hubungan_komunikasi'] = '001';
+              break;
+            case "SEDANG" :
+              args.item['hubungan_komunikasi'] = '002';
+              break;
+            case "BURUK" :
+              args.item['hubungan_komunikasi'] = '003';
+              break;
+          }
           args.item.master = true;
+          args.item.kud = kode_kud;
           await db.collection("kt")
             .add(args.item)
             .then(function () {
             })
             .catch(function (error) {
+              alert(error);
             });
-        } else {
+        } else if (!isValid) {
+          alert("Kebun / KUD tidak terdaftar");
+        } else if (!isEmpty) {
           alert("Kode sudah terdaftar");
         }
       },
@@ -150,7 +263,7 @@
           return $.grep(data, function(client) {
             return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
               && (!filter.nama_kelompok_tani.toLowerCase() || client.nama_kelompok_tani.toLowerCase().indexOf(filter.nama_kelompok_tani.toLowerCase()) > -1)
-              && (!filter.kud.toLowerCase() || client.kud.toLowerCase().indexOf(filter.kud.toLowerCase()) > -1)
+              && (!filter.nama_kud.toLowerCase() || client.nama_kud.toLowerCase().indexOf(filter.nama_kud.toLowerCase()) > -1)
               && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
               && (!filter.kemitraan.toLowerCase() || client.kemitraan.toLowerCase().indexOf(filter.kemitraan.toLowerCase()) > -1)
               && (!filter.hubungan_komunikasi.toLowerCase() || client.hubungan_komunikasi.toLowerCase().indexOf(filter.hubungan_komunikasi.toLowerCase()) > -1)
@@ -165,9 +278,9 @@
       fields: [
         { name: "kode", title: "Kode", type: "text", width: 60, editing: false, validate: "required" },
         { name: "nama_kelompok_tani", title: "Nama Kelompok Tani", type: "text", width: 150, validate: "required" },
-        { name: "kud", title: "KUD", type: "text", width: 60, editing: false, validate: "required" },
+        { name: "nama_kud", title: "KUD", type: "text", width: 130, editing: false, validate: "required" },
         { name: "kebun", title: "Kebun", type: "text", width: 60, editing: false, validate: "required" },
-        { name: "kemitraan", title: "Kemitraan", type: "text", width: 170, validate: "required" },
+        { name: "kemitraan", title: "Kemitraan", type: "text", width: 130, validate: "required" },
         { name: "hubungan_komunikasi", title: "Hubungan Komunikasi", type: "text", width: 130, validate: "required" },
         { name: "nama_ketua", title: "Nama Ketua", type: "text", width: 130, validate: "required" },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
