@@ -216,6 +216,11 @@
         var err = false;
         var isEmpty;
         args.item.kebun = selectedOptionKebun;
+        if(args.item.kode.length === 1) {
+          args.item.kode = "00" + args.item.kode;
+        } else if (args.item.kode.length === 2) {
+          args.item.kode = "0" + args.item.kode;
+        }
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         if(args.item['hubungan_mitra'] !== 'GREEN' && args.item['hubungan_mitra'] !== 'YELLOW' && args.item['hubungan_mitra'] !== 'RED') {
           alert('Hubungan mitra diisi dengan GREEN / YELLOW / RED')
@@ -237,12 +242,6 @@
             alert(error);
           });
         if(isEmpty && !err){
-          if(args.item.kode.length === 1) {
-            args.item.kode = "00" + args.item.kode;
-          } else if (args.item.kode.length === 2) {
-            args.item.kode = "0" + args.item.kode;
-          }
-
           switch (args.item['hubungan_mitra']) {
             case "GREEN" :
               args.item['hubungan_mitra'] = '001';

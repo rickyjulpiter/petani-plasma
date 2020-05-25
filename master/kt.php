@@ -264,6 +264,11 @@
         var isEmpty;
         args.item.kebun = selectedOptionKebun;
         args.item.kud = selectedOptionKud;
+        if(args.item.kode.length === 1) {
+          args.item.kode = "00" + args.item.kode;
+        } else if (args.item.kode.length === 2) {
+          args.item.kode = "0" + args.item.kode;
+        }
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         if(args.item['kemitraan'] !== 'GREEN' && args.item['kemitraan'] !== 'YELLOW' && args.item['kemitraan'] !== 'RED') {
           alert('Kemitraan diisi dengan GREEN / YELLOW / RED')
@@ -286,12 +291,6 @@
             alert(error);
           });
         if(isEmpty && !err){
-          if(args.item.kode.length === 1) {
-            args.item.kode = "00" + args.item.kode;
-          } else if (args.item.kode.length === 2) {
-            args.item.kode = "0" + args.item.kode;
-          }
-
           switch (args.item['kemitraan']) {
             case "GREEN" :
               args.item['kemitraan'] = '001';
