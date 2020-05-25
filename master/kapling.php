@@ -51,7 +51,38 @@
       <div class="card">
         <!-- /.card-header -->
         <div class="card-body">
-          <div id="spinner" style="text-align:center;">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Kebun</label>
+                <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
+                  <option selected="selected" value="" disabled></option>
+                </select>
+              </div>
+              <!-- /.form-group -->
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>KUD</label>
+                <i class="fas fa-circle-notch fa-spin" id="kudSpinner" hidden></i>
+                <label for="kudSelect"></label><select class="form-control select2bs4" id="kudSelect" style="width: 100%;" data-placeholder="KUD">
+                  <option selected="selected" value="" disabled></option>
+                </select>
+              </div>
+              <!-- /.form-group -->
+            </div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>KT</label>
+                <i class="fas fa-circle-notch fa-spin" id="ktSpinner" hidden></i>
+                <label for="ktSelect"></label><select class="form-control select2bs4" id="ktSelect" style="width: 100%;" data-placeholder="KT">
+                  <option selected="selected" value="" disabled></option>
+                </select>
+              </div>
+              <!-- /.form-group -->
+            </div>
+          </div>
+          <div id="spinner" style="text-align:center;" hidden>
             <span>Data Loading </span><i class="fas fa-circle-notch fa-spin"></i>
           </div>
           <div id="jsGrid1"></div>
@@ -79,27 +110,124 @@
   window.onload = function() {
     initApp();
   };
-</script>
-<script>
+  //Initialize Select2 Elements
+  $('.select2bs4').select2({
+    theme: 'bootstrap4'
+  })
+
+  var tempData, tempId;
+  var optionList;
+  var selectedOptionKebun;
+  var selectedOptionKud;
+  var selectedOptionKt;
   var db = firebase.firestore();
   var data = [];
   var id = [];
-  db.collection("kapling").orderBy("kode")
-    .onSnapshot((querySnapshot) => {
-      data = [];
-      querySnapshot.forEach((doc) => {
-        tempData = doc.data();
-        tempId = doc.id;
-        tempData['keys'] = tempId;
-        data.push(tempData);
-      });
-      load();
+
+  db.collection("kebun")
+    .orderBy("kode")
+    .get().then((querySnapshot) => {
+    optionList = '';
+    optionList += '<option value="" selected="selected" disabled></option>';
+    querySnapshot.forEach((doc) => {
+      optionList += '<option value="' + doc.data().kode + '">' + doc.data().kode + '</option>';
     });
+    $('#kebunSelect').append(optionList);
+  })
+
+  $('#kebunSelect').on('change', function() {
+    selectedOptionKebun = this.value;
+    $('#ktSpinner').removeAttr('hidden');
+    $('#kudSpinner').removeAttr('hidden');
+    db.collection("kud")
+      .where("kebun", "==", selectedOptionKebun)
+      .orderBy("kode")
+      .get().then((querySnapshot) => {
+      $('#kudSelect').empty();
+      $('#ktSelect').empty();
+      if (data.length) {
+        data = [];
+        load();
+      }
+      index = [];
+      if(!querySnapshot.size){
+        optionList = '';
+        $('#kudSpinner').attr('hidden', '');
+        $('#ktSpinner').attr('hidden', '');
+        $('#kudSelect').append(optionList);
+      }
+      optionList = '';
+      optionList += '<option value="" selected="selected" disabled></option>';
+      querySnapshot.forEach((doc) => {
+        if (!index.includes(doc.data().kode)) {
+          index.push(doc.data().kode);
+          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_koperasi + '</option>';
+        }
+      });
+      $('#kudSpinner').attr('hidden', '');
+      $('#ktSpinner').attr('hidden', '');
+      $('#kudSelect').append(optionList);
+    })
+  })
+
+  $('#kudSelect').on('change', function() {
+    selectedOptionKud = this.value;
+    $('#ktSpinner').removeAttr('hidden');
+    db.collection("kt")
+      .where("kebun", "==", selectedOptionKebun)
+      .where("kud", "==", selectedOptionKud)
+      .orderBy("kode")
+      .get().then((querySnapshot) => {
+      $('#ktSelect').empty();
+      if (data.length) {
+        data = [];
+        load();
+      }
+      index = [];
+      if(!querySnapshot.size){
+        optionList = '';
+        $('#ktSpinner').attr('hidden', '');
+        $('#kudSelect').append(optionList);
+      }
+      optionList = '';
+      optionList += '<option value="" selected="selected" disabled></option>';
+      querySnapshot.forEach((doc) => {
+        if (!index.includes(doc.data().kode)) {
+          index.push(doc.data().kode);
+          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_kelompok_tani + '</option>';
+        }
+      });
+      $('#ktSpinner').attr('hidden', '');
+      $('#ktSelect').append(optionList);
+    })
+  })
+
+  $('#ktSelect').on('change', function() {
+    selectedOptionKt = this.value;
+    $('#spinner').removeAttr('hidden');
+
+    db.collection("kapling")
+      .where("kebun", "==", selectedOptionKebun)
+      .where("kud", "==", selectedOptionKud)
+      .where("kt", "==", selectedOptionKt)
+      .orderBy("kode")
+      .onSnapshot((querySnapshot) => {
+        data = [];
+        querySnapshot.forEach((doc) => {
+          tempData = doc.data();
+          tempId = doc.id;
+          tempData['keys'] = tempId;
+          data.push(tempData);
+        });
+        console.log(data);
+        load();
+      });
+  })
 
   function load() {
-    $("#spinner").remove();
+    $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
-      height: "100%",
+      height: 600,
       width: "100%",
 
       filtering: true,
@@ -108,6 +236,7 @@
       autoload: true,
       inserting: true,
       paging: true,
+      pageSize: 10,
 
       onItemUpdating: async function(args) {
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
@@ -121,6 +250,21 @@
       },
 
       onItemInserting: async function(args) {
+        var isEmpty;
+        args.item.kebun = selectedOptionKebun;
+        args.item.kud = selectedOptionKud;
+        args.item.kt = selectedOptionKt;
+        if(args.item.kode.length === 1) {
+          args.item.kode = "00000" + args.item.kode;
+        } else if (args.item.kode.length === 2) {
+          args.item.kode = "0000" + args.item.kode;
+        } else if (args.item.kode.length === 3) {
+          args.item.kode = "000" + args.item.kode;
+        } else if (args.item.kode.length === 4) {
+          args.item.kode = "00" + args.item.kode;
+        } else if (args.item.kode.length === 5) {
+          args.item.kode = "0" + args.item.kode;
+        }
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         delete args.item['keys'];
         await db.collection("kapling")
@@ -133,6 +277,7 @@
             isEmpty = querySnapshot.empty;
           })
           .catch(function (error) {
+            alert(error);
           });
         if(isEmpty){
           args.item.master = true;
@@ -141,6 +286,7 @@
             .then(function () {
             })
             .catch(function (error) {
+              alert(error);
             });
         } else {
           alert("Kode sudah terdaftar");
@@ -153,9 +299,6 @@
             return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
               && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
               && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1)
-              && (!filter.kt.toLowerCase() || client.kt.toLowerCase().indexOf(filter.kt.toLowerCase()) > -1)
-              && (!filter.kud.toLowerCase() || client.kud.toLowerCase().indexOf(filter.kud.toLowerCase()) > -1)
-              && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
         },
@@ -167,9 +310,6 @@
         { name: "kode", title: "Kode", type: "text", width: 60, editing: false, validate: "required" },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 150, validate: "required" },
         { name: "no_kontak", title: "No Kontak Petani", type: "text", width: 150, validate: "required" },
-        { name: "kt", title: "KT", type: "text", width: 60, editing: false, validate: "required" },
-        { name: "kud", title: "KUD", type: "text", width: 60,  editing: false, validate: "required" },
-        { name: "kebun", title: "Kebun", type: "text", width: 60,  editing: false, validate: "required" },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
         { type: "control", deleteButton: false}
       ]
