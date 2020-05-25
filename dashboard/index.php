@@ -100,9 +100,7 @@
                 <!-- small box -->
                 <div class="small-box bg-info">
                   <div class="inner">
-                    <h3 id="kebun"><i class="fas fa-circle-notch fa-spin" id="spinner"></i></h3>
-
-                    <p>Kebun</p>
+                    <h4 id="kebun">KEBUN</i></h4>
                   </div>
                   <div class="icon">
                     <i class="ion ion-key"></i>
@@ -115,9 +113,7 @@
                 <!-- small box -->
                 <div class="small-box bg-success">
                   <div class="inner">
-                    <h3 id="kud"><i class="fas fa-circle-notch fa-spin" id="spinner"></i></h3>
-
-                    <p>KUD</p>
+                    <h4 id="kud">KUD</h4>
                   </div>
                   <div class="icon">
                     <i class="ion ion-key"></i>
@@ -130,9 +126,7 @@
                 <!-- small box -->
                 <div class="small-box bg-warning">
                   <div class="inner">
-                    <h3 id="kt"><i class="fas fa-circle-notch fa-spin" id="spinner"></i></h3>
-
-                    <p>KT</p>
+                    <h4 id="kt">KT</i></h4>
                   </div>
                   <div class="icon">
                     <i class="ion ion-key"></i>
@@ -145,9 +139,7 @@
                 <!-- small box -->
                 <div class="small-box bg-danger">
                   <div class="inner">
-                    <h3 id="kapling"><i class="fas fa-circle-notch fa-spin" id="spinner"></i></h3>
-
-                    <p>Kapling</p>
+                    <h4 id="kapling">Kapling</i></h4>
                   </div>
                   <div class="icon">
                     <i class="ion ion-key"></i>
@@ -190,10 +182,6 @@
   var today = new Date();
   today.setHours(0, 0, 0, 0);
   var db = firebase.firestore();
-  db.collection('kebun').get().then((kebunData) => $("#kebun").html(kebunData.size));
-  db.collection('kud').get().then((kudData) => $("#kud").html(kudData.size));
-  db.collection('kt').get().then((ktData) => $("#kt").html(ktData.size));
-  db.collection('kapling').get().then((kaplingData) => $("#kapling").html(kaplingData.size));
   db.collection('report').where("updated_at_hasil_kerja", ">=", today)
     .get().then((hasilKerjaData) => $("#laporan").html(hasilKerjaData.size));
   db.collection('report').where("updated_at_pembinaan_petani", ">=", today)
