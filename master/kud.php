@@ -93,6 +93,8 @@
     theme: 'bootstrap4'
   })
 
+  var tempData, tempId;
+  var optionList;
   var selectedOptionKebun;
   var db = firebase.firestore();
   var data = [];
@@ -212,6 +214,7 @@
 
       onItemInserting: async function(args) {
         var err = false;
+        var isEmpty;
         args.item.kebun = selectedOptionKebun;
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         if(args.item['hubungan_mitra'] !== 'GREEN' && args.item['hubungan_mitra'] !== 'YELLOW' && args.item['hubungan_mitra'] !== 'RED') {
