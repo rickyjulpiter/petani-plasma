@@ -51,7 +51,16 @@
       <div class="card">
         <!-- /.card-header -->
         <div class="card-body">
-          <div id="spinner" style="text-align:center;">
+          <div class="col-md-4">
+            <div class="form-group">
+              <label>Kebun</label>
+              <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
+                <option selected="selected" value="" disabled></option>
+              </select>
+            </div>
+            <!-- /.form-group -->
+          </div>
+          <div id="spinner" style="text-align:center;" hidden>
             <span>Data Loading </span><i class="fas fa-circle-notch fa-spin"></i>
           </div>
           <div id="jsGrid1"></div>
@@ -79,22 +88,71 @@
   window.onload = function() {
     initApp();
   };
-</script>
-<script>
+  //Initialize Select2 Elements
+  $('.select2bs4').select2({
+    theme: 'bootstrap4'
+  })
+
+  var selectedOptionKebun;
   var db = firebase.firestore();
   var data = [];
   var id = [];
-  db.collection("kud").orderBy("kode")
-    .onSnapshot((querySnapshot) => {
-      data = [];
-      querySnapshot.forEach((doc) => {
-        tempData = doc.data();
-        tempId = doc.id;
-        tempData['keys'] = tempId;
-        data.push(tempData);
-      });
-      load();
+
+  db.collection("kebun")
+    .orderBy("kode")
+    .get().then((querySnapshot) => {
+    optionList = '';
+    optionList += '<option value="" selected="selected" disabled></option>';
+    querySnapshot.forEach((doc) => {
+      optionList += '<option value="' + doc.data().kode + '">' + doc.data().kode + '</option>';
     });
+    $('#kebunSelect').append(optionList);
+  })
+
+  $('#kebunSelect').on('change', function() {
+    selectedOptionKebun = this.value;
+    $('#spinner').removeAttr('hidden');
+    db.collection("kud")
+      .where("kebun", "==", selectedOptionKebun)
+      .orderBy("kode")
+      .onSnapshot((querySnapshot) => {
+        data = [];
+        querySnapshot.forEach((doc) => {
+          tempData = doc.data();
+          tempId = doc.id;
+          tempData['keys'] = tempId;
+
+          if(tempData['hubungan_mitra'] === '001'){
+            tempData['hubungan_mitra'] = 'GREEN'
+          }
+          else if(tempData['hubungan_mitra'] === '002'){
+            tempData['hubungan_mitra'] = 'YELLOW'
+          }
+          else if(tempData['hubungan_mitra'] === '003'){
+            tempData['hubungan_mitra'] = 'RED'
+          }
+          else {
+            tempData['hubungan_mitra'] = 'ERROR'
+          }
+
+          if(tempData['hubungan_komunikasi'] === '001'){
+            tempData['hubungan_komunikasi'] = 'BAGUS'
+          }
+          else if(tempData['hubungan_komunikasi'] === '002'){
+            tempData['hubungan_komunikasi'] = 'SEDANG'
+          }
+          else if(tempData['hubungan_komunikasi'] === '003'){
+            tempData['hubungan_komunikasi'] = 'BURUK'
+          }
+          else {
+            tempData['hubungan_komunikasi'] = 'ERROR'
+          }
+
+          data.push(tempData);
+        });
+        load();
+      });
+  })
 
   function load() {
     $("#spinner").remove();
@@ -109,19 +167,61 @@
       inserting: true,
 
       onItemUpdating: async function(args) {
+        var err = false;
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        if(args.item['hubungan_mitra'] !== 'GREEN' && args.item['hubungan_mitra'] !== 'YELLOW' && args.item['hubungan_mitra'] !== 'RED') {
+          alert('Hubungan mitra diisi dengan GREEN / YELLOW / RED')
+          err = true;
+        }
+        if(args.item['hubungan_komunikasi'] !== 'BAGUS' && args.item['hubungan_komunikasi'] !== 'SEDANG' && args.item['hubungan_komunikasi'] !== 'BURUK') {
+          alert('Hubungan komunikasi diisi dengan BAGUS / SEDANG / BURUK')
+          err = true;
+        }
         delete args.item['keys'];
-        await db.collection("kud").doc(args.previousItem.keys)
-          .update(args.item)
-          .then(function () {
-          }).catch(function (error) {
-            alert('Data bermasalah');
-          });
-
+        if(!err) {
+          switch (args.item['hubungan_mitra']) {
+            case "GREEN" :
+              args.item['hubungan_mitra'] = '001';
+              break;
+            case "YELLOW" :
+              args.item['hubungan_mitra'] = '002';
+              break;
+            case "RED" :
+              args.item['hubungan_mitra'] = '003';
+              break;
+          }
+          switch (args.item['hubungan_komunikasi']) {
+            case "BAGUS" :
+              args.item['hubungan_komunikasi'] = '001';
+              break;
+            case "SEDANG" :
+              args.item['hubungan_komunikasi'] = '002';
+              break;
+            case "BURUK" :
+              args.item['hubungan_komunikasi'] = '003';
+              break;
+          }
+          await db.collection("kud").doc(args.previousItem.keys)
+            .update(args.item)
+            .then(function () {
+            }).catch(function (error) {
+              alert('Data bermasalah');
+            });
+        }
       },
 
       onItemInserting: async function(args) {
+        var err = false;
+        args.item.kebun = selectedOptionKebun;
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
+        if(args.item['hubungan_mitra'] !== 'GREEN' && args.item['hubungan_mitra'] !== 'YELLOW' && args.item['hubungan_mitra'] !== 'RED') {
+          alert('Hubungan mitra diisi dengan GREEN / YELLOW / RED')
+          err = true;
+        }
+        if(args.item['hubungan_komunikasi'] !== 'BAGUS' && args.item['hubungan_komunikasi'] !== 'SEDANG' && args.item['hubungan_komunikasi'] !== 'BURUK') {
+          alert('Hubungan komunikasi diisi dengan BAGUS / SEDANG / BURUK')
+          err = true;
+        }
         delete args.item['keys'];
         await db.collection("kud")
           .where("kode", "==", args.item.kode)
@@ -133,6 +233,28 @@
           .catch(function (error) {
           });
         if(isEmpty){
+          switch (args.item['hubungan_mitra']) {
+            case "GREEN" :
+              args.item['hubungan_mitra'] = '001';
+              break;
+            case "YELLOW" :
+              args.item['hubungan_mitra'] = '002';
+              break;
+            case "RED" :
+              args.item['hubungan_mitra'] = '003';
+              break;
+          }
+          switch (args.item['hubungan_komunikasi']) {
+            case "BAGUS" :
+              args.item['hubungan_komunikasi'] = '001';
+              break;
+            case "SEDANG" :
+              args.item['hubungan_komunikasi'] = '002';
+              break;
+            case "BURUK" :
+              args.item['hubungan_komunikasi'] = '003';
+              break;
+          }
           args.item.master = true;
           await db.collection("kud")
             .add(args.item)
@@ -159,7 +281,6 @@
               && (!filter.nama_bendahara.toLowerCase() || client.nama_bendahara.toLowerCase().indexOf(filter.nama_bendahara.toLowerCase()) > -1)
               && (!filter.no_kontak_bendahara.toLowerCase() || client.no_kontak_bendahara.toLowerCase().indexOf(filter.no_kontak_bendahara.toLowerCase()) > -1)
               && (!filter.keterangan.toLowerCase() || client.keterangan.toLowerCase().indexOf(filter.keterangan.toLowerCase()) > -1)
-              && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
         },
@@ -170,7 +291,7 @@
       fields: [
         { name: "kode", title: "Kode", type: "text", width: 60, editing: false, validate: "required" },
         { name: "nama_koperasi", title: "Nama Koperasi", type: "text", width: 150, validate: "required" },
-        { name: "hubungan_mitra", title: "Hubungan Mitra", type: "text", width: 150, validate: "required" },
+        { name: "hubungan_mitra", title: "Hubungan Mitra", type: "text", width: 120, validate: "required" },
         { name: "hubungan_komunikasi", title: "Hubungan Komunikasi", type: "text", width: 120, validate: "required" },
         { name: "nama_ketua", title: "Nama Ketua", type: "text", width: 120, validate: "required" },
         { name: "no_kontak_ketua", title: "No Kontak Ketua", type: "text", width: 120, validate: "required" },
@@ -179,7 +300,6 @@
         { name: "nama_bendahara", title: "Nama Bendahara", type: "text", width: 120, validate: "required" },
         { name: "no_kontak_bendahara", title: "No Kontak Bendahara", type: "text", width: 120, validate: "required" },
         { name: "keterangan", title: "Keterangan", type: "text", width: 100 },
-        { name: "kebun", title: "Kebun", type: "text", width: 100, editing: false, validate: "required" },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
         { type: "control", deleteButton: false}
       ]
