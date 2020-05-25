@@ -157,7 +157,7 @@
   })
 
   function load() {
-    $("#spinner").remove();
+    $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
       height: "100%",
       width: "100%",
