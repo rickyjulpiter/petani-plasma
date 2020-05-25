@@ -177,9 +177,9 @@
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
     $('#kudSpinner').removeAttr('hidden');
-    db.collection("report")
+    db.collection("kud")
       .where("kebun", "==", selectedOptionKebun)
-      .orderBy("kud")
+      .orderBy("kode")
       .get().then((querySnapshot) => {
       $('#kudSelect').empty();
       $('#ktSelect').empty();
@@ -201,27 +201,18 @@
         $('#tanggalSpinner').attr('hidden', '');
         $('#kudSelect').append(optionList);
       }
+      optionList = '';
+      optionList += '<option value="" selected="selected" disabled></option>';
       querySnapshot.forEach((doc) => {
-        if (!index.includes(doc.data().kud)) {
-          index.push(doc.data().kud);
-
-          db.collection("kud")
-            .where("kebun", "==", selectedOptionKebun)
-            .where("kode", "==", doc.data().kud)
-            .get().then((querySnapshot1) => {
-            optionList = '';
-            optionList += '<option value="" selected="selected" disabled></option>';
-            querySnapshot1.forEach((doc1) => {
-              optionList += '<option value="' + doc.data().kud + '">' + doc1.data().nama_koperasi + '</option>';
-
-              $('#kudSpinner').attr('hidden', '');
-              $('#ktSpinner').attr('hidden', '');
-              $('#tanggalSpinner').attr('hidden', '');
-              $('#kudSelect').append(optionList);
-            })
-          })
+        if (!index.includes(doc.data().kode)) {
+          index.push(doc.data().kode);
+          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_koperasi + '</option>';
         }
       });
+      $('#kudSpinner').attr('hidden', '');
+      $('#ktSpinner').attr('hidden', '');
+      $('#tanggalSpinner').attr('hidden', '');
+      $('#kudSelect').append(optionList);
     })
   })
 
@@ -229,10 +220,10 @@
     selectedOptionKud = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
-    db.collection("report")
+    db.collection("kt")
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
-      .orderBy("kt")
+      .orderBy("kode")
       .get().then((querySnapshot) => {
       $('#ktSelect').empty();
       $("#tanggalPicker").datepicker("refresh");
@@ -252,27 +243,17 @@
         $('#tanggalSpinner').attr('hidden', '');
         $('#kudSelect').append(optionList);
       }
+      optionList = '';
+      optionList += '<option value="" selected="selected" disabled></option>';
       querySnapshot.forEach((doc) => {
-        if (!index.includes(doc.data().kt)) {
-          index.push(doc.data().kt);
-
-          db.collection("kt")
-            .where("kebun", "==", selectedOptionKebun)
-            .where("kud", "==", selectedOptionKud)
-            .where("kode", "==", doc.data().kt)
-            .get().then((querySnapshot1) => {
-            optionList = '';
-            optionList += '<option value="" selected="selected" disabled></option>';
-            querySnapshot1.forEach((doc1) => {
-              optionList += '<option value="' + doc.data().kt + '">' + doc1.data().nama_kelompok_tani + '</option>';
-
-              $('#ktSpinner').attr('hidden', '');
-              $('#tanggalSpinner').attr('hidden', '');
-              $('#ktSelect').append(optionList);
-            })
-          })
+        if (!index.includes(doc.data().kode)) {
+          index.push(doc.data().kode);
+          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_kelompok_tani + '</option>';
         }
       });
+      $('#ktSpinner').attr('hidden', '');
+      $('#tanggalSpinner').attr('hidden', '');
+      $('#ktSelect').append(optionList);
     })
   })
 
@@ -403,7 +384,12 @@
         { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
         { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
           itemTemplate: function (value, item) {
-            return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
+            if(value === null){
+              return $("<div>").text("-");
+            }
+            else {
+              return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
+            }
           }
         }
       ]
