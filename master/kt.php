@@ -51,7 +51,29 @@
       <div class="card">
         <!-- /.card-header -->
         <div class="card-body">
-          <div id="spinner" style="text-align:center;">
+          <div class="row">
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>Kebun</label>
+                <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
+                  <option selected="selected" value="" disabled></option>
+                </select>
+              </div>
+              <!-- /.form-group -->
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-4">
+              <div class="form-group">
+                <label>KUD</label>
+                <i class="fas fa-circle-notch fa-spin" id="kudSpinner" hidden></i>
+                <label for="kudSelect"></label><select class="form-control select2bs4" id="kudSelect" style="width: 100%;" data-placeholder="KUD">
+                  <option selected="selected" value="" disabled></option>
+                </select>
+              </div>
+              <!-- /.form-group -->
+            </div>
+          </div>
+          <div id="spinner" style="text-align:center;" hidden>
             <span>Data Loading </span><i class="fas fa-circle-notch fa-spin"></i>
           </div>
           <div id="jsGrid1"></div>
@@ -79,52 +101,110 @@
   window.onload = function() {
     initApp();
   };
-</script>
-<script>
+  //Initialize Select2 Elements
+  $('.select2bs4').select2({
+    theme: 'bootstrap4'
+  })
+
+  var tempData, tempId;
+  var optionList;
+  var selectedOptionKebun;
+  var selectedOptionKud;
   var db = firebase.firestore();
   var data = [];
   var id = [];
-  db.collection("kt").orderBy("kode")
-    .onSnapshot((querySnapshot) => {
-      data = [];
-      querySnapshot.forEach((doc) => {
-        tempData = doc.data();
-        tempId = doc.id;
-        tempData['keys'] = tempId;
 
-        if(tempData['kemitraan'] === '001'){
-          tempData['kemitraan'] = 'GREEN'
-        }
-        else if(tempData['kemitraan'] === '002'){
-          tempData['kemitraan'] = 'YELLOW'
-        }
-        else if(tempData['kemitraan'] === '003'){
-          tempData['kemitraan'] = 'RED'
-        }
-        else {
-          tempData['kemitraan'] = 'ERROR'
-        }
-
-        if(tempData['hubungan_komunikasi'] === '001'){
-          tempData['hubungan_komunikasi'] = 'BAGUS'
-        }
-        else if(tempData['hubungan_komunikasi'] === '002'){
-          tempData['hubungan_komunikasi'] = 'SEDANG'
-        }
-        else if(tempData['hubungan_komunikasi'] === '003'){
-          tempData['hubungan_komunikasi'] = 'BURUK'
-        }
-        else {
-          tempData['hubungan_komunikasi'] = 'ERROR'
-        }
-
-        data.push(tempData);
-      });
-      load();
+  db.collection("kebun")
+    .orderBy("kode")
+    .get().then((querySnapshot) => {
+    optionList = '';
+    optionList += '<option value="" selected="selected" disabled></option>';
+    querySnapshot.forEach((doc) => {
+      optionList += '<option value="' + doc.data().kode + '">' + doc.data().kode + '</option>';
     });
+    $('#kebunSelect').append(optionList);
+  })
+
+  $('#kebunSelect').on('change', function() {
+    selectedOptionKebun = this.value;
+    $('#kudSpinner').removeAttr('hidden');
+    db.collection("kud")
+      .where("kebun", "==", selectedOptionKebun)
+      .orderBy("kode")
+      .get().then((querySnapshot) => {
+      $('#kudSelect').empty();
+      availableDates = [];
+      if (data.length) {
+        data = [];
+        load();
+      }
+      index = [];
+      if(!querySnapshot.size){
+        optionList = '';
+        $('#kudSpinner').attr('hidden', '');
+        $('#kudSelect').append(optionList);
+      }
+      optionList = '';
+      optionList += '<option value="" selected="selected" disabled></option>';
+      querySnapshot.forEach((doc) => {
+        if (!index.includes(doc.data().kode)) {
+          index.push(doc.data().kode);
+          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_koperasi + '</option>';
+        }
+      });
+      $('#kudSpinner').attr('hidden', '');
+      $('#kudSelect').append(optionList);
+    })
+  })
+
+  $('#kudSelect').on('change', function() {
+    selectedOptionKud = this.value;
+    $('#spinner').removeAttr('hidden');
+    db.collection("kt")
+      .where("kebun", "==", selectedOptionKebun)
+      .where("kud", "==", selectedOptionKud)
+      .orderBy("kode")
+      .onSnapshot((querySnapshot) => {
+        data = [];
+        querySnapshot.forEach((doc) => {
+          tempData = doc.data();
+          tempId = doc.id;
+          tempData['keys'] = tempId;
+
+          if(tempData['kemitraan'] === '001'){
+            tempData['kemitraan'] = 'GREEN'
+          }
+          else if(tempData['kemitraan'] === '002'){
+            tempData['kemitraan'] = 'YELLOW'
+          }
+          else if(tempData['kemitraan'] === '003'){
+            tempData['kemitraan'] = 'RED'
+          }
+          else {
+            tempData['kemitraan'] = 'ERROR'
+          }
+
+          if(tempData['hubungan_komunikasi'] === '001'){
+            tempData['hubungan_komunikasi'] = 'BAGUS'
+          }
+          else if(tempData['hubungan_komunikasi'] === '002'){
+            tempData['hubungan_komunikasi'] = 'SEDANG'
+          }
+          else if(tempData['hubungan_komunikasi'] === '003'){
+            tempData['hubungan_komunikasi'] = 'BURUK'
+          }
+          else {
+            tempData['hubungan_komunikasi'] = 'ERROR'
+          }
+
+          data.push(tempData);
+        });
+        load();
+      });
+  })
 
   function load() {
-    $("#spinner").remove();
+    $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
       height: "100%",
       width: "100%",
@@ -182,6 +262,9 @@
 
       onItemInserting: async function(args) {
         var err = false;
+        var isEmpty;
+        args.item.kebun = selectedOptionKebun;
+        args.item.kud = selectedOptionKud;
         args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
         if(args.item['kemitraan'] !== 'GREEN' && args.item['kemitraan'] !== 'YELLOW' && args.item['kemitraan'] !== 'RED') {
           alert('Kemitraan diisi dengan GREEN / YELLOW / RED')
@@ -192,34 +275,24 @@
           err = true;
         }
         delete args.item['keys'];
-        await db.collection("kud")
-          .where("nama_koperasi", "==", args.item.nama_kud)
+        await db.collection("kt")
+          .where("kode", "==", args.item.kode)
+          .where("kud", "==", args.item.kud)
           .where("kebun", "==", args.item.kebun)
           .get()
           .then(function (querySnapshot) {
-            isValid = !(querySnapshot.empty);
-            isEmpty = false;
-            querySnapshot.forEach((doc) => {
-              kode_kud = doc.data().kode;
-            })
+            isEmpty = querySnapshot.empty;
           })
           .catch(function (error) {
             alert(error);
           });
-        if(isValid) {
-          await db.collection("kt")
-            .where("kode", "==", args.item.kode)
-            .where("nama_kud", "==", args.item.nama_kud)
-            .where("kebun", "==", args.item.kebun)
-            .get()
-            .then(function (querySnapshot) {
-              isEmpty = querySnapshot.empty;
-            })
-            .catch(function (error) {
-              alert(error);
-            });
-        }
-        if(isEmpty && !err && isValid){
+        if(isEmpty && !err){
+          if(args.item.kode.length === 1) {
+            args.item.kode = "00" + args.item.kode;
+          } else if (args.item.kode.length === 2) {
+            args.item.kode = "0" + args.item.kode;
+          }
+
           switch (args.item['kemitraan']) {
             case "GREEN" :
               args.item['kemitraan'] = '001';
@@ -243,7 +316,6 @@
               break;
           }
           args.item.master = true;
-          args.item.kud = kode_kud;
           await db.collection("kt")
             .add(args.item)
             .then(function () {
@@ -251,9 +323,7 @@
             .catch(function (error) {
               alert(error);
             });
-        } else if (!isValid) {
-          alert("Kebun / KUD tidak terdaftar");
-        } else if (!isEmpty) {
+        } else {
           alert("Kode sudah terdaftar");
         }
       },
@@ -263,8 +333,6 @@
           return $.grep(data, function(client) {
             return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
               && (!filter.nama_kelompok_tani.toLowerCase() || client.nama_kelompok_tani.toLowerCase().indexOf(filter.nama_kelompok_tani.toLowerCase()) > -1)
-              && (!filter.nama_kud.toLowerCase() || client.nama_kud.toLowerCase().indexOf(filter.nama_kud.toLowerCase()) > -1)
-              && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
               && (!filter.kemitraan.toLowerCase() || client.kemitraan.toLowerCase().indexOf(filter.kemitraan.toLowerCase()) > -1)
               && (!filter.hubungan_komunikasi.toLowerCase() || client.hubungan_komunikasi.toLowerCase().indexOf(filter.hubungan_komunikasi.toLowerCase()) > -1)
               && (!filter.nama_ketua.toLowerCase() || client.nama_ketua.toLowerCase().indexOf(filter.nama_ketua.toLowerCase()) > -1)
@@ -278,8 +346,6 @@
       fields: [
         { name: "kode", title: "Kode", type: "text", width: 60, editing: false, validate: "required" },
         { name: "nama_kelompok_tani", title: "Nama Kelompok Tani", type: "text", width: 150, validate: "required" },
-        { name: "nama_kud", title: "KUD", type: "text", width: 130, editing: false, validate: "required" },
-        { name: "kebun", title: "Kebun", type: "text", width: 60, editing: false, validate: "required" },
         { name: "kemitraan", title: "Kemitraan", type: "text", width: 130, validate: "required" },
         { name: "hubungan_komunikasi", title: "Hubungan Komunikasi", type: "text", width: 130, validate: "required" },
         { name: "nama_ketua", title: "Nama Ketua", type: "text", width: 130, validate: "required" },
