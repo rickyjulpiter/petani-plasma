@@ -234,8 +234,9 @@
             isEmpty = querySnapshot.empty;
           })
           .catch(function (error) {
+            alert(error);
           });
-        if(isEmpty){
+        if(isEmpty && !err){
           switch (args.item['hubungan_mitra']) {
             case "GREEN" :
               args.item['hubungan_mitra'] = '001';
@@ -264,6 +265,7 @@
             .then(function () {
             })
             .catch(function (error) {
+              alert(error);
             });
         } else {
           alert("Kode sudah terdaftar");
