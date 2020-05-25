@@ -157,6 +157,7 @@
   })
 
   $('#kudSelect').on('change', function() {
+    var dataOld = [];
     selectedOptionKud = this.value;
     $('#spinner').removeAttr('hidden');
     db.collection("kt")
@@ -197,6 +198,7 @@
           }
 
           data.push(tempData);
+          dataOld.push(tempId);
         });
         load();
       });
@@ -205,7 +207,7 @@
   function load() {
     $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
-      height: "100%",
+      height: 600,
       width: "100%",
 
       filtering: true,
@@ -214,6 +216,7 @@
       autoload: true,
       inserting: true,
       paging: true,
+      pageSize: 10,
 
       onItemUpdating: async function(args) {
         var err = false;

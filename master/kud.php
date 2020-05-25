@@ -159,7 +159,7 @@
   function load() {
     $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
-      height: "100%",
+      height: 600,
       width: "100%",
 
       filtering: true,
@@ -167,6 +167,8 @@
       sorting: true,
       autoload: true,
       inserting: true,
+      paging: true,
+      pageSize: 10,
 
       onItemUpdating: async function(args) {
         var err = false;
