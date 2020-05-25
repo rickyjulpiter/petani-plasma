@@ -237,6 +237,12 @@
             alert(error);
           });
         if(isEmpty && !err){
+          if(args.item.kode.length === 1) {
+            args.item.kode = "00" + args.item.kode;
+          } else if (args.item.kode.length === 2) {
+            args.item.kode = "0" + args.item.kode;
+          }
+
           switch (args.item['hubungan_mitra']) {
             case "GREEN" :
               args.item['hubungan_mitra'] = '001';
