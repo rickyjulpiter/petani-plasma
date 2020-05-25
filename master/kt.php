@@ -133,7 +133,6 @@
       .orderBy("kode")
       .get().then((querySnapshot) => {
       $('#kudSelect').empty();
-      availableDates = [];
       if (data.length) {
         data = [];
         load();
