@@ -172,10 +172,7 @@
         // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
         // The solution is add a contain var and check the if statement
 
-        console.log(data);
-        console.log(querySnapshot.docs[0].id);
         contain = data[0].keys === querySnapshot.docs[0].id;
-        console.log(contain);
         if (contain || init) {
           data = [];
           console.log("forEach run");
