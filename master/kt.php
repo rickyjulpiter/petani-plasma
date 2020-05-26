@@ -157,7 +157,9 @@
   })
 
   $('#kudSelect').on('change', function() {
-    var dataOld = [];
+    var init = true;
+    var contain;
+    data = [{keys: ""}]; //onSnapshot fix
     selectedOptionKud = this.value;
     $('#spinner').removeAttr('hidden');
     db.collection("kt")
@@ -165,42 +167,54 @@
       .where("kud", "==", selectedOptionKud)
       .orderBy("kode")
       .onSnapshot((querySnapshot) => {
-        data = [];
-        querySnapshot.forEach((doc) => {
-          tempData = doc.data();
-          tempId = doc.id;
-          tempData['keys'] = tempId;
+        console.log("onSnapshot run");
+        // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
+        // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
+        // The solution is add a contain var and check the if statement
 
-          if(tempData['kemitraan'] === '001'){
-            tempData['kemitraan'] = 'GREEN'
-          }
-          else if(tempData['kemitraan'] === '002'){
-            tempData['kemitraan'] = 'YELLOW'
-          }
-          else if(tempData['kemitraan'] === '003'){
-            tempData['kemitraan'] = 'RED'
-          }
-          else {
-            tempData['kemitraan'] = 'ERROR'
-          }
+        console.log(data);
+        console.log(querySnapshot.docs[0].id);
+        contain = data[0].keys === querySnapshot.docs[0].id;
+        console.log(contain);
+        if (contain || init) {
+          data = [];
+          console.log("forEach run");
+          querySnapshot.forEach((doc) => {
+            tempData = doc.data();
+            tempId = doc.id;
+            tempData['keys'] = tempId;
 
-          if(tempData['hubungan_komunikasi'] === '001'){
-            tempData['hubungan_komunikasi'] = 'BAGUS'
-          }
-          else if(tempData['hubungan_komunikasi'] === '002'){
-            tempData['hubungan_komunikasi'] = 'SEDANG'
-          }
-          else if(tempData['hubungan_komunikasi'] === '003'){
-            tempData['hubungan_komunikasi'] = 'BURUK'
-          }
-          else {
-            tempData['hubungan_komunikasi'] = 'ERROR'
-          }
+            if(tempData['kemitraan'] === '001'){
+              tempData['kemitraan'] = 'GREEN'
+            }
+            else if(tempData['kemitraan'] === '002'){
+              tempData['kemitraan'] = 'YELLOW'
+            }
+            else if(tempData['kemitraan'] === '003'){
+              tempData['kemitraan'] = 'RED'
+            }
+            else {
+              tempData['kemitraan'] = 'ERROR'
+            }
 
-          data.push(tempData);
-          dataOld.push(tempId);
-        });
-        load();
+            if(tempData['hubungan_komunikasi'] === '001'){
+              tempData['hubungan_komunikasi'] = 'BAGUS'
+            }
+            else if(tempData['hubungan_komunikasi'] === '002'){
+              tempData['hubungan_komunikasi'] = 'SEDANG'
+            }
+            else if(tempData['hubungan_komunikasi'] === '003'){
+              tempData['hubungan_komunikasi'] = 'BURUK'
+            }
+            else {
+              tempData['hubungan_komunikasi'] = 'ERROR'
+            }
+
+            data.push(tempData);
+          });
+          init = false;
+          load();
+        }
       });
   })
 
