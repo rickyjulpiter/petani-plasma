@@ -167,7 +167,6 @@
       .where("kud", "==", selectedOptionKud)
       .orderBy("kode")
       .onSnapshot((querySnapshot) => {
-        console.log("onSnapshot run");
         // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
         // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
         // The solution is add a contain var and check the if statement
@@ -175,7 +174,6 @@
         contain = data[0].keys === querySnapshot.docs[0].id;
         if (contain || init) {
           data = [];
-          console.log("forEach run");
           querySnapshot.forEach((doc) => {
             tempData = doc.data();
             tempId = doc.id;
