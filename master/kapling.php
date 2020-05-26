@@ -203,6 +203,9 @@
   })
 
   $('#ktSelect').on('change', function() {
+    var init = true;
+    var contain;
+    data = [{keys: ""}]; //onSnapshot fix
     selectedOptionKt = this.value;
     $('#spinner').removeAttr('hidden');
 
@@ -212,15 +215,22 @@
       .where("kt", "==", selectedOptionKt)
       .orderBy("kode")
       .onSnapshot((querySnapshot) => {
-        data = [];
-        querySnapshot.forEach((doc) => {
-          tempData = doc.data();
-          tempId = doc.id;
-          tempData['keys'] = tempId;
-          data.push(tempData);
-        });
-        console.log(data);
-        load();
+        // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
+        // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
+        // The solution is add a contain var and check the if statement
+
+        contain = data[0].keys === querySnapshot.docs[0].id;
+        if (contain || init) {
+          data = [];
+          querySnapshot.forEach((doc) => {
+            tempData = doc.data();
+            tempId = doc.id;
+            tempData['keys'] = tempId;
+            data.push(tempData);
+          });
+          console.log(data);
+          load();
+        }
       });
   })
 
