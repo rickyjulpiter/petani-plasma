@@ -285,6 +285,9 @@
   })
 
   $('#tanggalPicker').on('change', function() {
+    var init = true;
+    var contain;
+    data = [{keys: ""}]; //onSnapshot fix
     selectedDate = $("#tanggalPicker").datepicker("getDate");
     selectedDateTomorrow.setDate(selectedDate.getDate() + 1);
     selectedDateTomorrow.setHours(0, 0, 0, 0);
@@ -318,29 +321,36 @@
       .where("updated_at_pembinaan_petani", ">=", selectedDate).where("updated_at_pembinaan_petani", "<", selectedDateTomorrow)
       .orderBy("updated_at_pembinaan_petani")
       .onSnapshot((querySnapshot) => {
-        data = [];
-        var documentSize = querySnapshot.size;
-        if(!querySnapshot.size){
-          load();
+        // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
+        // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
+        // The solution is add a contain var and check the if statement
+
+        contain = data[0].keys === querySnapshot.docs[0].id;
+        if (contain || init) {
+          data = [];
+          var documentSize = querySnapshot.size;
+          if(!querySnapshot.size){
+            load();
+          }
+          querySnapshot.forEach((doc) => {
+            var nama = "";
+            //fetch nama pegawai
+            db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
+              nama = doc1.data().nama_pegawai;
+
+              const tempData = doc.data();
+              tempData['keys'] = doc.id;
+              tempData['nama_pegawai'] = nama;
+              data.push(tempData);
+              var marker = L.marker([doc.data().location_pembinaan_petani.lat, doc.data().location_pembinaan_petani.long]).addTo(layerGroup);
+              marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
+
+              if(data.length === documentSize) {
+                load();
+              }
+            })
+          });
         }
-        querySnapshot.forEach((doc) => {
-          var nama = "";
-          //fetch nama pegawai
-          db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
-            nama = doc1.data().nama_pegawai;
-
-            const tempData = doc.data();
-            tempData['keys'] = doc.id;
-            tempData['nama_pegawai'] = nama;
-            data.push(tempData);
-            var marker = L.marker([doc.data().location_pembinaan_petani.lat, doc.data().location_pembinaan_petani.long]).addTo(layerGroup);
-            marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
-
-            if(data.length === documentSize) {
-              load();
-            }
-          })
-        });
       })
   })
 

@@ -283,6 +283,9 @@
   })
 
   $('#tanggalPicker').on('change', function() {
+    var init = true;
+    var contain;
+    data = [{keys: ""}]; //onSnapshot fix
     selectedDate = $("#tanggalPicker").datepicker("getDate");
     selectedDateTomorrow.setDate(selectedDate.getDate() + 1);
     selectedDateTomorrow.setHours(0, 0, 0, 0);
@@ -308,7 +311,6 @@
     else {
       layerGroup.clearLayers();
     }
-
     db.collection("report")
       .where("kebun", "==", selectedOptionKebun)
       .where("kud", "==", selectedOptionKud)
@@ -316,29 +318,36 @@
       .where("updated_at_hasil_kerja", ">=", selectedDate).where("updated_at_hasil_kerja", "<", selectedDateTomorrow)
       .orderBy("updated_at_hasil_kerja")
       .onSnapshot((querySnapshot) => {
-        data = [];
-        var documentSize = querySnapshot.size;
-        if(!querySnapshot.size){
-          load();
+        // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
+        // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
+        // The solution is add a contain var and check the if statement
+
+        contain = data[0].keys === querySnapshot.docs[0].id;
+        if (contain || init) {
+          data = [];
+          var documentSize = querySnapshot.size;
+          if(!querySnapshot.size){
+            load();
+          }
+          querySnapshot.forEach((doc) => {
+            var nama = "";
+            //fetch nama pegawai
+            db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
+              nama = doc1.data().nama_pegawai;
+
+              const tempData = doc.data();
+              tempData['keys'] = doc.id;
+              tempData['nama_pegawai'] = nama;
+              data.push(tempData);
+              var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+              marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
+
+              if(data.length === documentSize) {
+                load();
+              }
+            })
+          });
         }
-        querySnapshot.forEach((doc) => {
-          var nama = "";
-          //fetch nama pegawai
-          db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
-            nama = doc1.data().nama_pegawai;
-
-            const tempData = doc.data();
-            tempData['keys'] = doc.id;
-            tempData['nama_pegawai'] = nama;
-            data.push(tempData);
-            var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
-            marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
-
-            if(data.length === documentSize) {
-              load();
-            }
-          })
-        });
       })
   })
 
