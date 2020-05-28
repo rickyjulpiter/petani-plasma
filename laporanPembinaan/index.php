@@ -325,7 +325,9 @@
         // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
         // The solution is add a contain var and check the if statement
 
-        contain = data[0].keys === querySnapshot.docs[0].id;
+        if (!querySnapshot.empty) {
+          contain = data[0].keys === querySnapshot.docs[0].id;
+        }
         if (contain || init) {
           data = [];
           var documentSize = querySnapshot.size;
