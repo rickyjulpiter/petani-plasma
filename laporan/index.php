@@ -424,7 +424,7 @@
       data: data,
 
       fields: [
-        { name: "tanggal", title: "Tanggal", type: "text", width: 80, editing: false },
+        { name: "tanggal", title: "Tanggal", type: "text", width: 85, editing: false },
         { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100, editing: false },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
