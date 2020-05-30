@@ -85,7 +85,16 @@
               <div class="form-group">
                 <label>Tanggal kunjungan</label>
                 <i class="fas fa-circle-notch fa-spin" id="tanggalSpinner" hidden></i>
-                <label for="tanggalPicker"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPicker">
+                <div class="row">
+                  <div class="col-md-6">
+                    <label>Dari</label>
+                    <label for="tanggalPickerDari"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerDari">
+                  </div>
+                  <div class="col-md-6">
+                    <label>Sampai</label>
+                    <label for="tanggalPickerSampai"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerSampai">
+                  </div>
+                </div>
                 <span class="text-sm">*Note: Tanggal yang tidak ditandai berarti kosong</span>
               </div>
               <!-- /.form-group -->
@@ -139,22 +148,28 @@
   var selectedOptionKud;
   var selectedOptionKt;
   var availableDates = [];
-  var selectedDate;
+  var selectedDateSampai; // datePickerSampai
+  var selectedDateDari // datePickerDari
   var data = [];
   var mapInit = true;
   var layerGroup = L.layerGroup();
-  var selectedDateTomorrow = new Date();
 
-  $("#tanggalPicker").datepicker({
+  $("#tanggalPickerDari").datepicker({
     changeMonth: true,
     changeYear: true,
     beforeShowDay: highlightDays
   });
-  $("#tanggalPicker").datepicker("option", "dateFormat", "M d, yy");
+  $("#tanggalPickerDari").datepicker("option", "dateFormat", "M d, yy");
+  $("#tanggalPickerSampai").datepicker({
+    changeMonth: true,
+    changeYear: true,
+    beforeShowDay: highlightDays
+  });
+  $("#tanggalPickerSampai").datepicker("option", "dateFormat", "M d, yy");
 
   function highlightDays(date) {
     for (var i = 0; i < availableDates.length; i++) {
-      if (availableDates[i] == date.getTime()) {
+      if (availableDates[i] === date.getTime()) {
         return [true, 'highlight'];
       }
     }
@@ -183,8 +198,10 @@
       .get().then((querySnapshot) => {
         $('#kudSelect').empty();
         $('#ktSelect').empty();
-        $("#tanggalPicker").datepicker("refresh");
-        $("#tanggalPicker").datepicker("setDate", null);
+        $("#tanggalPickerDari").datepicker("refresh");
+        $("#tanggalPickerDari").datepicker("setDate", null);
+        $("#tanggalPickerSampai").datepicker("refresh");
+        $("#tanggalPickerSampai").datepicker("setDate", null);
         availableDates = [];
         if (data.length) {
           data = [];
@@ -226,8 +243,10 @@
       .orderBy("kode")
       .get().then((querySnapshot) => {
         $('#ktSelect').empty();
-        $("#tanggalPicker").datepicker("refresh");
-        $("#tanggalPicker").datepicker("setDate", null);
+        $("#tanggalPickerDari").datepicker("refresh");
+        $("#tanggalPickerDari").datepicker("setDate", null);
+        $("#tanggalPickerSampai").datepicker("refresh");
+        $("#tanggalPickerSampai").datepicker("setDate", null);
         availableDates = [];
         if (data.length) {
           data = [];
@@ -245,6 +264,7 @@
         }
         optionList = '';
         optionList += '<option value="" selected="selected" disabled></option>';
+        optionList += '<option value="all">SEMUA</option>';
         querySnapshot.forEach((doc) => {
           if (!index.includes(doc.data().kode)) {
             index.push(doc.data().kode);
@@ -265,8 +285,10 @@
       .where("kud", "==", selectedOptionKud)
       .where("kt", "==", selectedOptionKt)
       .get().then((querySnapshot) => {
-        $("#tanggalPicker").datepicker("refresh");
-        $("#tanggalPicker").datepicker("setDate", null);
+        $("#tanggalPickerDari").datepicker("refresh");
+        $("#tanggalPickerDari").datepicker("setDate", null);
+        $("#tanggalPickerSampai").datepicker("refresh");
+        $("#tanggalPickerSampai").datepicker("setDate", null);
         availableDates = [];
         if (data.length) {
           data = [];
@@ -282,13 +304,17 @@
       })
   })
 
-  $('#tanggalPicker').on('change', function() {
-    var init = true;
-    var contain;
+  $('#tanggalPickerDari').on('change', function() {
+    selectedDateDari = $("#tanggalPickerDari").datepicker("getDate");
+    $("#tanggalPickerSampai").datepicker("refresh");
+    $("#tanggalPickerSampai").datepicker("setDate", null);
+  })
+
+  $('#tanggalPickerSampai').on('change', function() {
     data = [{keys: ""}]; //onSnapshot fix
-    selectedDate = $("#tanggalPicker").datepicker("getDate");
-    selectedDateTomorrow.setDate(selectedDate.getDate() + 1);
-    selectedDateTomorrow.setHours(0, 0, 0, 0);
+    selectedDateSampai = $("#tanggalPickerSampai").datepicker("getDate");
+    selectedDateSampai.setDate(selectedDateSampai.getDate() + 1);
+    selectedDateSampai.setHours(0, 0, 0, 0);
     $("#spinner").removeAttr("hidden");
 
     if (mapInit) {
@@ -311,46 +337,65 @@
     else {
       layerGroup.clearLayers();
     }
-    db.collection("report")
-      .where("kebun", "==", selectedOptionKebun)
-      .where("kud", "==", selectedOptionKud)
-      .where("kt", "==", selectedOptionKt)
-      .where("updated_at_hasil_kerja", ">=", selectedDate).where("updated_at_hasil_kerja", "<", selectedDateTomorrow)
-      .orderBy("updated_at_hasil_kerja")
-      .onSnapshot((querySnapshot) => {
-        // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
-        // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
-        // The solution is add a contain var and check the if statement
-        if (!querySnapshot.empty) {
-          contain = data[0].keys === querySnapshot.docs[0].id;
-        }
-        if (contain || init) {
-          data = [];
-          var documentSize = querySnapshot.size;
-          if(!querySnapshot.size){
+
+    if(selectedOptionKt === "all") {
+      db.collection("report")
+        .where("kebun", "==", selectedOptionKebun)
+        .where("kud", "==", selectedOptionKud)
+        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+        .orderBy("updated_at_hasil_kerja")
+        .onSnapshot((querySnapshot) => {
+          fetchData(querySnapshot);
+        })
+    } else {
+      db.collection("report")
+        .where("kebun", "==", selectedOptionKebun)
+        .where("kud", "==", selectedOptionKud)
+        .where("kt", "==", selectedOptionKt)
+        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+        .orderBy("updated_at_hasil_kerja")
+        .onSnapshot((querySnapshot) => {
+          fetchData(querySnapshot);
+        })
+    }
+  })
+
+  function fetchData(querySnapshot) {
+    var init = true;
+    var contain;
+    // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
+    // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
+    // The solution is add a contain var and check the if statement
+    if (!querySnapshot.empty) {
+      contain = data[0].keys === querySnapshot.docs[0].id;
+    }
+    if (contain || init) {
+      data = [];
+      var documentSize = querySnapshot.size;
+      if(!querySnapshot.size){
+        load();
+      }
+      querySnapshot.forEach((doc) => {
+        var nama = "";
+        //fetch nama pegawai
+        db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
+          nama = doc1.data().nama_pegawai;
+
+          const tempData = doc.data();
+          tempData['keys'] = doc.id;
+          tempData['tanggal'] = new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).toLocaleDateString();
+          tempData['nama_pegawai'] = nama;
+          data.push(tempData);
+          var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+          marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
+
+          if(data.length === documentSize) {
             load();
           }
-          querySnapshot.forEach((doc) => {
-            var nama = "";
-            //fetch nama pegawai
-            db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
-              nama = doc1.data().nama_pegawai;
-
-              const tempData = doc.data();
-              tempData['keys'] = doc.id;
-              tempData['nama_pegawai'] = nama;
-              data.push(tempData);
-              var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
-              marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
-
-              if(data.length === documentSize) {
-                load();
-              }
-            })
-          });
-        }
-      })
-  })
+        })
+      });
+    }
+  }
 
   function load() {
     $("#spinner").attr("hidden", "");
@@ -366,7 +411,8 @@
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
-            return (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
+            return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
+              && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
               && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
               && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
               && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
@@ -378,6 +424,7 @@
       data: data,
 
       fields: [
+        { name: "tanggal", title: "Tanggal", type: "text", width: 80, editing: false },
         { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100, editing: false },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
