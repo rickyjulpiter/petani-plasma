@@ -220,6 +220,7 @@
         }
         optionList = '';
         optionList += '<option value="" selected="selected" disabled></option>';
+        optionList += '<option value="all">SEMUA</option>';
         querySnapshot.forEach((doc) => {
           if (!index.includes(doc.data().kode)) {
             index.push(doc.data().kode);
@@ -237,45 +238,56 @@
     selectedOptionKud = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
-    db.collection("kt")
-      .where("kebun", "==", selectedOptionKebun)
-      .where("kud", "==", selectedOptionKud)
-      .orderBy("kode")
-      .get().then((querySnapshot) => {
-        $('#ktSelect').empty();
-        $("#tanggalPickerDari").datepicker("refresh");
-        $("#tanggalPickerDari").datepicker("setDate", null);
-        $("#tanggalPickerSampai").datepicker("refresh");
-        $("#tanggalPickerSampai").datepicker("setDate", null);
-        availableDates = [];
-        if (data.length) {
-          data = [];
-          load();
-        }
-        if (!mapInit) {
-          layerGroup.clearLayers();
-        }
-        index = [];
-        if(!querySnapshot.size){
-          optionList = '';
-          $('#ktSpinner').attr('hidden', '');
-          $('#tanggalSpinner').attr('hidden', '');
-          $('#kudSelect').append(optionList);
-        }
-        optionList = '';
-        optionList += '<option value="" selected="selected" disabled></option>';
-        optionList += '<option value="all">SEMUA</option>';
-        querySnapshot.forEach((doc) => {
-          if (!index.includes(doc.data().kode)) {
-            index.push(doc.data().kode);
-            optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_kelompok_tani + '</option>';
-          }
-        });
-        $('#ktSpinner').attr('hidden', '');
-        $('#tanggalSpinner').attr('hidden', '');
-        $('#ktSelect').append(optionList);
+
+    if(selectedOptionKud === "all") {
+      $("#ktSelect").attr("disabled", "");
+      $('#ktSpinner').attr('hidden', '');
+      $('#tanggalSpinner').attr('hidden', '');
+    } else {
+      db.collection("kt")
+        .where("kebun", "==", selectedOptionKebun)
+        .where("kud", "==", selectedOptionKud)
+        .orderBy("kode")
+        .get().then((querySnapshot) => {
+          fetchDataKt(querySnapshot);
       })
+    }
   })
+
+  function fetchDataKt(querySnapshot) {
+    $('#ktSelect').empty();
+    $("#tanggalPickerDari").datepicker("refresh");
+    $("#tanggalPickerDari").datepicker("setDate", null);
+    $("#tanggalPickerSampai").datepicker("refresh");
+    $("#tanggalPickerSampai").datepicker("setDate", null);
+    availableDates = [];
+    if (data.length) {
+      data = [];
+      load();
+    }
+    if (!mapInit) {
+      layerGroup.clearLayers();
+    }
+    index = [];
+    if(!querySnapshot.size){
+      optionList = '';
+      $('#ktSpinner').attr('hidden', '');
+      $('#tanggalSpinner').attr('hidden', '');
+      $('#kudSelect').append(optionList);
+    }
+    optionList = '';
+    optionList += '<option value="" selected="selected" disabled></option>';
+    optionList += '<option value="all">SEMUA</option>';
+    querySnapshot.forEach((doc) => {
+      if (!index.includes(doc.data().kode)) {
+        index.push(doc.data().kode);
+        optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_kelompok_tani + '</option>';
+      }
+    });
+    $('#ktSpinner').attr('hidden', '');
+    $('#tanggalSpinner').attr('hidden', '');
+    $('#ktSelect').append(optionList);
+  }
 
   $('#ktSelect').on('change', function() {
     selectedOptionKt = this.value;
@@ -338,7 +350,15 @@
       layerGroup.clearLayers();
     }
 
-    if(selectedOptionKt === "all") {
+    if(selectedOptionKud === "all") {
+      db.collection("report")
+        .where("kebun", "==", selectedOptionKebun)
+        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+        .orderBy("updated_at_hasil_kerja")
+        .onSnapshot((querySnapshot) => {
+          fetchData(querySnapshot);
+        })
+    } else if(selectedOptionKt === "all") {
       db.collection("report")
         .where("kebun", "==", selectedOptionKebun)
         .where("kud", "==", selectedOptionKud)
