@@ -240,9 +240,12 @@
     $('#ktSpinner').removeAttr('hidden');
 
     if(selectedOptionKud === "all") {
-      $("#ktSelect").attr("disabled", "");
-      $('#ktSpinner').attr('hidden', '');
-      $('#tanggalSpinner').attr('hidden', '');
+      db.collection("kt")
+        .where("kebun", "==", selectedOptionKebun)
+        .orderBy("kode")
+        .get().then((querySnapshot) => {
+        fetchDataKt(querySnapshot);
+      })
     } else {
       db.collection("kt")
         .where("kebun", "==", selectedOptionKebun)
@@ -294,7 +297,6 @@
     $('#tanggalSpinner').removeAttr('hidden');
     db.collection("report")
       .where("kebun", "==", selectedOptionKebun)
-      .where("kud", "==", selectedOptionKud)
       .where("kt", "==", selectedOptionKt)
       .get().then((querySnapshot) => {
         $("#tanggalPickerDari").datepicker("refresh");
@@ -351,13 +353,25 @@
     }
 
     if(selectedOptionKud === "all") {
-      db.collection("report")
-        .where("kebun", "==", selectedOptionKebun)
-        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-        .orderBy("updated_at_hasil_kerja")
-        .onSnapshot((querySnapshot) => {
-          fetchData(querySnapshot);
-        })
+      if (selectedOptionKt === "all") {
+        db.collection("report")
+          .where("kebun", "==", selectedOptionKebun)
+          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+          .orderBy("updated_at_hasil_kerja")
+          .onSnapshot((querySnapshot) => {
+            fetchData(querySnapshot);
+          })
+      } else {
+        db.collection("report")
+          .where("kebun", "==", selectedOptionKebun)
+          .where("kt", "==", selectedOptionKt)
+          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+          .orderBy("updated_at_hasil_kerja")
+          .onSnapshot((querySnapshot) => {
+            fetchData(querySnapshot);
+          })
+      }
+
     } else if(selectedOptionKt === "all") {
       db.collection("report")
         .where("kebun", "==", selectedOptionKebun)
