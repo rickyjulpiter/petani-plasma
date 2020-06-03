@@ -88,11 +88,11 @@
                 <div class="row">
                   <div class="col-md-6">
                     <label>Dari</label>
-                    <label for="tanggalPickerDari"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerDari">
+                    <label for="tanggalPickerDari"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerDari" autocomplete="off">
                   </div>
                   <div class="col-md-6">
                     <label>Sampai</label>
-                    <label for="tanggalPickerSampai"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerSampai">
+                    <label for="tanggalPickerSampai"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerSampai" autocomplete="off">
                   </div>
                 </div>
                 <span class="text-sm">*Note: Tanggal yang tidak ditandai berarti kosong</span>
