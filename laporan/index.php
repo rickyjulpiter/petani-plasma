@@ -417,7 +417,7 @@
 
           const tempData = doc.data();
           tempData['keys'] = doc.id;
-          tempData['tanggal'] = new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).toLocaleDateString();
+          tempData['tanggal'] = new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).toLocaleString();
           tempData['nama_pegawai'] = nama;
           data.push(tempData);
           var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
@@ -434,13 +434,15 @@
   function load() {
     $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
-      height: "100%",
+      height: 600,
       width: "100%",
 
       filtering: true,
       editing: false,
       sorting: true,
       autoload: true,
+      paging: true,
+      pageSize: 10,
 
       controller: {
         loadData: function(filter) {

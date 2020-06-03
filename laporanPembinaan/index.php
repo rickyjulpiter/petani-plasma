@@ -438,13 +438,15 @@
     console.log(data);
     $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
-      height: "100%",
+      height: 600,
       width: "100%",
 
       filtering: true,
       editing: false,
       sorting: true,
       autoload: true,
+      paging: true,
+      pageSize: 10,
 
       controller: {
         loadData: function(filter) {
