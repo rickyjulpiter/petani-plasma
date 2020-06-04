@@ -432,6 +432,8 @@
   }
 
   function load() {
+    var mapInitTable = true;
+    var refreshCount = 0;
     $("#spinner").attr("hidden", "");
     $("#jsGrid1").jsGrid({
       height: 600,
@@ -443,6 +445,20 @@
       autoload: true,
       paging: true,
       pageSize: 10,
+
+      onRefreshed: function(args) {
+        console.log(mapInitTable);
+        if (!mapInitTable && refreshCount >= 2) {
+          layerGroup.clearLayers();
+          var item = args.grid.data;
+          item.forEach((data) => {
+            var marker = L.marker([data.location_hasil_kerja.lat, data.location_hasil_kerja.long]).addTo(layerGroup);
+            marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
+          })
+        }
+        mapInitTable = false;
+        refreshCount += 1;
+      },
 
       controller: {
         loadData: function(filter) {
