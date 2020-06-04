@@ -38,13 +38,19 @@
             <li class="nav-item">
               <a href="../laporan" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Laporan Staff Kerja</p>
+                <p>Staff Kerja</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="../laporanPembinaan" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Laporan Pembinaan </p>
+                <p>Pembinaan </p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="../produksiKu" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Produksi-Ku </p>
               </a>
             </li>
           </ul>
@@ -92,22 +98,22 @@
             </p>
           </a>
         </li>
-<!--        <li class="nav-item">-->
-<!--          <a href="#" class="nav-link" onclick="admin()">-->
-<!--            <i class="nav-icon fas fa-sign-out-alt"></i>-->
-<!--            <p>-->
-<!--              do admin-->
-<!--            </p>-->
-<!--          </a>-->
-<!--        </li>-->
-<!--        <li class="nav-item">-->
-<!--          <a href="#" class="nav-link" onclick="copy()">-->
-<!--            <i class="nav-icon fas fa-sign-out-alt"></i>-->
-<!--            <p>-->
-<!--              Copy Data-->
-<!--            </p>-->
-<!--          </a>-->
-<!--        </li>-->
+        <!--        <li class="nav-item">-->
+        <!--          <a href="#" class="nav-link" onclick="admin()">-->
+        <!--            <i class="nav-icon fas fa-sign-out-alt"></i>-->
+        <!--            <p>-->
+        <!--              do admin-->
+        <!--            </p>-->
+        <!--          </a>-->
+        <!--        </li>-->
+        <!--        <li class="nav-item">-->
+        <!--          <a href="#" class="nav-link" onclick="copy()">-->
+        <!--            <i class="nav-icon fas fa-sign-out-alt"></i>-->
+        <!--            <p>-->
+        <!--              Copy Data-->
+        <!--            </p>-->
+        <!--          </a>-->
+        <!--        </li>-->
       </ul>
     </nav>
     <!-- /.sidebar-menu -->
