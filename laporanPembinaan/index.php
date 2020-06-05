@@ -418,7 +418,7 @@
 
             const tempData = doc.data();
             tempData['keys'] = doc.id;
-            tempData['tanggal'] = new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).toLocaleDateString();
+            tempData['tanggal'] = new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).toLocaleString();
             tempData['nama_pegawai'] = nama;
             data.push(tempData);
             var marker = L.marker([doc.data().location_pembinaan_petani.lat, doc.data().location_pembinaan_petani.long]).addTo(layerGroup);

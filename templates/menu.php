@@ -47,12 +47,12 @@
                 <p>Pembinaan </p>
               </a>
             </li>
-            <li class="nav-item">
-              <a href="../produksiKu" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Produksi-Ku </p>
-              </a>
-            </li>
+<!--            <li class="nav-item">-->
+<!--              <a href="../produksiKu" class="nav-link">-->
+<!--                <i class="far fa-circle nav-icon"></i>-->
+<!--                <p>Produksi-Ku </p>-->
+<!--              </a>-->
+<!--            </li>-->
           </ul>
         </li>
         <li class="nav-item has-treeview">
