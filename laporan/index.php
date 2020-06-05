@@ -447,7 +447,6 @@
       pageSize: 10,
 
       onRefreshed: function(args) {
-        console.log(mapInitTable);
         if (!mapInitTable && refreshCount >= 2) {
           layerGroup.clearLayers();
           var item = args.grid.data;
