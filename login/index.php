@@ -34,9 +34,6 @@
         </div>
         <!-- /.col -->
       </div>
-      <p class="mb-1">
-        <a href="forgot-password.html">I forgot my password</a>
-      </p>
     </div>
     <!-- /.login-card-body -->
   </div>
@@ -53,21 +50,26 @@
 
     firebase.auth().signInWithEmailAndPassword(email, password)
       .then(function(result) {
-        var role = result.user.displayName;
-        if (role === 'Admin') {
-          window.location.assign("../dashboard/");
-        } else {
-          firebase.auth().signOut().then(function() {
-            // Sign-out successful.
-            window.alert("Kamu tidak memiliki akses");
-            location.reload();
-          }).catch(function(error) {
-            // An error happened.
-            var errorCode = error.code;
-            var errorMessage = error.message;
-            window.alert("Error : " + errorMessage);
-          });
-        }
+        console.log(result.user.uid);
+        firebase.firestore().collection("admin").doc(result.user.uid).get().then((doc) => {
+          console.log(doc.data());
+          if(doc.exists) {
+            window.location.assign("../dashboard/");
+          } else {
+            firebase.auth().signOut().then(function() {
+              // Sign-out successful.
+              window.alert("Kamu tidak memiliki akses");
+              location.reload();
+            }).catch(function(error) {
+              // An error happened.
+              var errorCode = error.code;
+              var errorMessage = error.message;
+              window.alert("Error : " + errorMessage);
+            });
+          }
+        }).catch(function(error) {
+          console.log("Error getting document:", error);
+        });
       }).catch(function(error) {
       // Handle Errors here.
       var errorCode = error.code;
