@@ -295,7 +295,7 @@
   $('#ktSelect').on('change', function() {
     selectedOptionKt = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
-    db.collection("report")
+    db.collection("produksiku")
       .where("kebun", "==", selectedOptionKebun)
       .where("kt", "==", selectedOptionKt)
       .get().then((querySnapshot) => {
@@ -312,7 +312,7 @@
         layerGroup.clearLayers();
       }
       querySnapshot.forEach((doc) => {
-        availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
+        availableDates.push(new Date(doc.data().updated.seconds * 1000).setHours(0, 0, 0, 0));
       });
       $('#tanggalSpinner').attr('hidden', '');
     })
@@ -354,40 +354,40 @@
 
     if(selectedOptionKud === "all") {
       if (selectedOptionKt === "all") {
-        db.collection("report")
+        db.collection("produksiku")
           .where("kebun", "==", selectedOptionKebun)
-          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-          .orderBy("updated_at_hasil_kerja")
+          .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
+          .orderBy("updated")
           .onSnapshot((querySnapshot) => {
             fetchData(querySnapshot);
           })
       } else {
-        db.collection("report")
+        db.collection("produksiku")
           .where("kebun", "==", selectedOptionKebun)
           .where("kt", "==", selectedOptionKt)
-          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-          .orderBy("updated_at_hasil_kerja")
+          .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
+          .orderBy("updated")
           .onSnapshot((querySnapshot) => {
             fetchData(querySnapshot);
           })
       }
 
     } else if(selectedOptionKt === "all") {
-      db.collection("report")
+      db.collection("produksiku")
         .where("kebun", "==", selectedOptionKebun)
         .where("kud", "==", selectedOptionKud)
-        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-        .orderBy("updated_at_hasil_kerja")
+        .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
+        .orderBy("updated")
         .onSnapshot((querySnapshot) => {
           fetchData(querySnapshot);
         })
     } else {
-      db.collection("report")
+      db.collection("produksiku")
         .where("kebun", "==", selectedOptionKebun)
         .where("kud", "==", selectedOptionKud)
         .where("kt", "==", selectedOptionKt)
-        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-        .orderBy("updated_at_hasil_kerja")
+        .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
+        .orderBy("updated")
         .onSnapshot((querySnapshot) => {
           fetchData(querySnapshot);
         })
@@ -417,10 +417,10 @@
 
           const tempData = doc.data();
           tempData['keys'] = doc.id;
-          tempData['tanggal'] = new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).toLocaleString();
+          tempData['tanggal'] = new Date(doc.data().updated.seconds * 1000).toLocaleString();
           tempData['nama_pegawai'] = nama;
           data.push(tempData);
-          var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+          var marker = L.marker([doc.data().location.lat, doc.data().location.long]).addTo(layerGroup);
           marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
 
           if(data.length === documentSize) {
@@ -432,6 +432,7 @@
   }
 
   function load() {
+    console.log(data);
     var mapInitTable = true;
     var refreshCount = 0;
     $("#spinner").attr("hidden", "");
@@ -447,12 +448,11 @@
       pageSize: 10,
 
       onRefreshed: function(args) {
-        console.log(mapInitTable);
         if (!mapInitTable && refreshCount >= 2) {
           layerGroup.clearLayers();
           var item = args.grid.data;
           item.forEach((data) => {
-            var marker = L.marker([data.location_hasil_kerja.lat, data.location_hasil_kerja.long]).addTo(layerGroup);
+            var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
             marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
           })
         }
@@ -464,11 +464,18 @@
         loadData: function(filter) {
           return $.grep(data, function(client) {
             return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
+              && (!filter.id_role.toLowerCase() || client.id_role.toLowerCase().indexOf(filter.id_role.toLowerCase()) > -1)
               && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
               && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
-              && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
-              && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
-              && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1);
+              && (!filter.tandan_masak || client.tandan_masak === filter.tandan_masak)
+              && (!filter.mentah || client.mentah === filter.mentah)
+              && (!filter.overripe || client.overripe === filter.overripe)
+              && (!filter.empty_bunch || client.empty_bunch === filter.empty_bunch)
+              && (!filter.abnormal || client.abnormal === filter.abnormal)
+              && (!filter.tangkai_panjang || client.tangkai_panjang === filter.tangkai_panjang)
+              && (!filter.tidak_cangkam_kodok || client.tidak_cangkam_kodok === filter.tidak_cangkam_kodok)
+              && (!filter.kg_brondolan_diatas_goni || client.kg_brondolan_diatas_goni === filter.kg_brondolan_diatas_goni)
+              && (!filter.kg_brondolan_tanpa_goni || client.kg_brondolan_tanpa_goni === filter.kg_brondolan_tanpa_goni);
           });
         },
       },
@@ -476,13 +483,21 @@
       data: data,
 
       fields: [
-        { name: "tanggal", title: "Tanggal", type: "text", width: 85, editing: false },
-        { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
-        { name: "kapling", title: "Kapling", type: "text", width: 100, editing: false },
-        { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-        { name: "prioritas", title: "Type", type: "text", width: 55 },
-        { name: "saran", title: "Saran", type: "text", width: 120 },
-        { name: "url_pic_hasil_kerja", title: "Foto", type: "text", width: 85, sorting: false,
+        { name: "tanggal", title: "Tanggal", type: "text", width: 85 },
+        { name: "id_role", title: "STAFF/KRANI", type: "text", width: 55 },
+        { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100 },
+        { name: "kapling", title: "Kapling", type: "text", width: 60 },
+        { name: "tandan_masak", title: "Tandan Masak", type: "number", width: 55 },
+        { name: "mentah", title: "Mentah", type: "number", width: 55 },
+        { name: "overripe", title: "Overripe", type: "number", width: 55 },
+        { name: "empty_bunch", title: "Jjg Kosong", type: "number", width: 55 },
+        { name: "abnormal", title: "Abnormal", type: "number", width: 55 },
+        { name: "tangkai_panjang", title: "Tangkai Panjang", type: "number", width: 55 },
+        { name: "tidak_cangkam_kodok", title: "Tdk Cangkam Kodok", type: "number", width: 55 },
+        { name: "kg_brondolan_diatas_goni", title: "Kg Brondolan Diatas Goni", type: "number", width: 55 },
+        { name: "kg_brondolan_tanpa_goni", title: "Kg Brondolan Tanpa Goni", type: "number", width: 55 },
+        { name: "ket", title: "Ket", type: "number", width: 120, sorting: false },
+        { name: "url_pic", title: "Foto", type: "text", width: 85, sorting: false,
           itemTemplate: function (value, item) {
             if(value === null){
               return $("<div>").text("-");
