@@ -419,6 +419,7 @@
             const tempData = doc.data();
             tempData['keys'] = doc.id;
             tempData['tanggal'] = new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).toLocaleString();
+            tempData['tanggalTarget'] = new Date(doc.data().target.seconds * 1000).toLocaleDateString();
             tempData['nama_pegawai'] = nama;
             data.push(tempData);
             var marker = L.marker([doc.data().location_pembinaan_petani.lat, doc.data().location_pembinaan_petani.long]).addTo(layerGroup);
@@ -482,13 +483,19 @@
       data: data,
 
       fields: [
-        { name: "tanggal", title: "Tanggal", type: "text", width: 85, editing: false },
+        { name: "tanggal", title: "Tanggal", type: "text", width: 87, editing: false },
+        { name: "tipe_kunjungan", title: "Tipe Kunjungan", type: "text", width: 100, editing: false },
         { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100 },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
         { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
         { name: "saran", title: "Saran", type: "text", width: 120 },
         { name: "tanggapan", title: "Pendapat petani", type: "text", width: 120 },
+        { name: "pekerjaan", title: "Pekerjaan", type: "text", width: 120 },
+        { name: "bahan", title: "Bahan", type: "text", width: 120 },
+        { name: "quantity", title: "Quantity", type: "text", width: 120 },
+        { name: "dosis", title: "Dosis", type: "text", width: 120 },
+        { name: "tanggalTarget", title: "Target", type: "text", width: 120 },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
         { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
         { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
