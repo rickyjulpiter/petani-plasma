@@ -312,7 +312,9 @@
           layerGroup.clearLayers();
         }
         querySnapshot.forEach((doc) => {
-          availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
+          if (doc.data().updated_at_hasil_kerja != null) {
+            availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
+          }
         });
         $('#tanggalSpinner').attr('hidden', '');
       })

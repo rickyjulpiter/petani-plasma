@@ -88,7 +88,21 @@
                 <p>Kapling</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="../master/pekerjaan.php" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Pekerjaan</p>
+              </a>
+            </li>
           </ul>
+        </li>
+        <li class="nav-item">
+          <a href="../news" class="nav-link">
+            <i class="nav-icon fas fa-newspaper"></i>
+            <p>
+              News
+            </p>
+          </a>
         </li>
         <li class="nav-item">
           <a href="#" class="nav-link" onclick="logout()">
