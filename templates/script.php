@@ -53,6 +53,7 @@
 <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-analytics.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-auth.js"></script>
 <script src="https://www.gstatic.com/firebasejs/7.14.5/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/7.15.0/firebase-storage.js"></script>
 
 <script>
   // Your web app's Firebase configuration
@@ -74,11 +75,11 @@
 <!-- Authentication -->
 <script type="text/javascript">
   function logout() {
-    firebase.auth().signOut().then(function() {
+    firebase.auth().signOut().then(function () {
       // Sign-out successful.
       window.alert("Sign Out Success")
       window.location.assign("../login/index.php");
-    }).catch(function(error) {
+    }).catch(function (error) {
       // An error happened.
       var errorCode = error.code;
       var errorMessage = error.message;
@@ -88,7 +89,7 @@
   }
 
   function initApp() {
-    firebase.auth().onAuthStateChanged(function(user) {
+    firebase.auth().onAuthStateChanged(function (user) {
       if (user) {
         // User is signed in.
         $("#spinnerContent").remove();

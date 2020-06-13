@@ -51,7 +51,9 @@
       <div class="card">
         <!-- /.card-header -->
         <div class="card-header">
-          <button onclick="modalDefault()" class = "btn btn-block btn-info btn-sm col-2" data-toggle="modal" data-target="#modal-default">Tambah News</button>
+          <button onclick="modalDefault()" class="btn btn-block btn-info btn-sm col-2" data-toggle="modal"
+                  data-target="#modal-default">Tambah News
+          </button>
         </div>
         <div class="card-body">
           <div id="spinner" style="text-align:center;">
@@ -77,56 +79,63 @@
         <div class="modal fade" id="modal-default">
           <div class="modal-dialog">
             <div class="modal-content">
-              <div class="modal-header">
-                <h4 class="modal-title" id="modalTitle"></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
-              </div>
-              <div class="modal-body">
-                <form method="post" enctype="multipart/form-data">
+              <form action="" method="post" enctype="multipart/form-data" onsubmit="return false">
+                <div class="modal-header">
+                  <h4 class="modal-title" id="modalTitle"></h4>
+                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                  </button>
+                </div>
+                <div class="modal-body">
                   <div class="col-sm-12">
                     <div class="form-group">
-                      <label>Judul</label>
-                      <label for="title"></label><input type="text" class="form-control" placeholder="Judul" id="title" autocomplete="off" />
+                      <label for="title">Judul</label><input type="text" class="form-control" placeholder="Judul"
+                                                             id="title"
+                                                             autocomplete="off" required/>
                     </div>
                   </div>
                   <div class="col-sm-12">
                     <div class="form-group">
-                      <label>Isi</label>
-                      <label for="body"></label><textarea type="text" class="form-control" placeholder="Isi" rows="6" id="body"></textarea>
+                      <label for="body">Isi</label><textarea type="text" class="form-control" placeholder="Isi" rows="6"
+                                                             id="body" required></textarea>
                     </div>
                   </div>
                   <div class="row">
                     <div class="col-sm-6">
-                      <div class="form-group">
-                        <label>Link Video</label>
-                        <label for="url_video"></label><input type="text" class="form-control" placeholder="Link Video" id="url_video"
-                                                              autocomplete="off" />
+                      <div class="col-sm-12">
+                        <div class="form-group">
+                          <label for="url_video">Link Video</label><input type="text" class="form-control"
+                                                                          placeholder="Link Video"
+                                                                          id="url_video"
+                                                                          autocomplete="off"/>
+                        </div>
+                      </div>
+                      <div class="col-sm-12">
+                        <div class="form-group">
+                          <label for="master">Master</label><select class="form-control select2bs4" id="master"
+                                                                    data-placeholder="Master" style="width: 100%">
+                            <option value="1" selected>True</option>
+                            <option value="0">False</option>
+                          </select>
+                        </div>
                       </div>
                     </div>
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <label>Master</label>
-                        <label for="master"></label><select class="form-control select2bs4" id="master" data-placeholder="Master" style="width: 100%">
-                          <option value="1" selected>True</option>
-                          <option value="0">False</option>
-                        </select>
+                        <label>Foto</label>
+                        <img id="imageTag" class="images" src="../dist/img/avatar.png"
+                             style="width: 215px; height: 215px; object-fit: fill;">
+                        <input type="file" accept="image/" id="url_foto" required/>
                       </div>
                     </div>
                   </div>
-                  <div class="col-sm-6">
-                    <div class="form-group">
-                      <label>Foto</label>
-                      <input type="file" placeholder="Foto" id="url_foto" />
-                    </div>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer justify-content-between">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
-              </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                  <button type="submit" class="btn btn-primary" id="buttonSaveChange">Submit</i>
+                  </button>
+                </div>
+              </form>
             </div>
             <!-- /.modal-content -->
           </div>
@@ -170,8 +179,11 @@
   let $titleInput = jQuery("#title");
   let $bodyInput = jQuery("#body");
   let $urlVideoInput = jQuery("#url_video");
-  let $fotoInput = jQuery("#foto");
-  db.collection("berita").orderBy("date", "desc")
+  let $fotoInput = jQuery("#url_foto");
+  let $master = jQuery('#master');
+  let $buttonSaveChange = jQuery("#buttonSaveChange");
+  let pic = null;
+  db.collection("berita")
     .onSnapshot((querySnapshot) => {
       tableData = [];
       if (initStat === false) {
@@ -184,6 +196,7 @@
         tempData['date'] = new Date(doc.data().date.seconds * 1000).toLocaleDateString();
         tableData.push(tempData);
       });
+      console.log(tableData);
       table = tableJq.DataTable({
         "responsive": true,
         "autoWidth": false,
@@ -192,8 +205,21 @@
           {"data": "date"},
           {"data": "title"},
           {"data": "body", "orderable": false,},
-          {"data": "url_pic", "orderable": false,},
-          {"data": "url_video", "orderable": false,},
+          {
+            "data": "url_pic",
+            "orderable": false,
+            "render": function (data, type, full, meta) {
+              return data ? '<a href="' + data + '" target="_blank">Link</a>' : '';
+            },
+
+          },
+          {
+            "data": "url_video",
+            "orderable": false,
+            "render": function (data, type, full, meta) {
+              return data ? '<a href="' + data + '" target="_blank">Link</a>' : '';
+            },
+          },
           {
             "data": "master",
             "orderable": false,
@@ -204,11 +230,11 @@
           },
           {
             "data": "keys",
-            "width": "20px",
+            "orderable": false,
             "render": function (data, type, full, meta) {
               let index = tableData.indexOf(full)
               return '<button class = "btn btn-block btn-primary btn-sm" onclick = "showModal (' + index + ')" data-toggle="modal" data-target="#modal-default">Edit</button>' +
-                '<button class ="btn btn-block btn-danger btn-sm">Delete</button>';
+                '<button class ="btn btn-block btn-danger btn-sm" onclick = "deleteNews (' + index + ')">Delete</button>';
             },
           }
         ],
@@ -219,104 +245,214 @@
     });
 
   function showModal(id) {
+    jQuery("#imageTag").removeAttr("hidden");
     $modalTitle.text("Edit News");
-    $titleInput.attr("value", tableData[id].title);
-    $bodyInput.text(tableData[id].body);
-    $urlVideoInput.attr("value", tableData[id].url_video);
+    $titleInput.val(tableData[id].title)
+    $bodyInput.val(tableData[id].body);
+    $urlVideoInput.val(tableData[id].url_video);
+    $fotoInput.val("");
+    $fotoInput.removeAttr("required");
+    console.log(tableData[id].url_pic);
+    jQuery("#imageTag").attr("src", tableData[id].url_pic);
     if (tableData[id].master) {
       jQuery('#master').val("1").change();
     } else {
       jQuery('#master').val("0").change();
     }
+    $buttonSaveChange.attr("onclick", "editNews(" + id + ")");
   }
 
   function modalDefault() {
+    $fotoInput.attr("required", "required");
     $modalTitle.text("Tambah News");
-    $titleInput.attr("value", "");
-    $bodyInput.text("");
-    $urlVideoInput.attr("value", "");
+    $titleInput.val("")
+    $bodyInput.val("");
+    $urlVideoInput.val("");
     jQuery('#master').val("1").change();
+    $buttonSaveChange.attr("onclick", "addNews()");
+    $fotoInput.val("");
+    jQuery("#imageTag").attr("hidden", "hidden");
+    $buttonSaveChange.html('Submit');
   }
 
-  function load() {
-    $("#spinner").remove();
-    $("#jsGrid1").jsGrid({
-      height: 600,
-      width: "100%",
+  $fotoInput.change(function (e) {
+    console.log("test");
+    pic = e.target.files[0];
+    console.log(pic);
+  })
 
-      filtering: true,
-      editing: true,
-      sorting: true,
-      autoload: true,
-      paging: true,
-      pageSize: 10,
+  async function addNews() {
+    let todayDate = new Date();
+    let title = $titleInput.val();
+    let body = $bodyInput.val();
+    let url_video = $urlVideoInput.val();
+    let master = ($master.val() === '1');
+    let pic_link;
+    if (title === "" || body === "" || pic === null) {
+      return;
+    } else if (title.length > 50) {
+      alert("Judul berita maks 50 karakter");
+      return;
+    } else if (body.length > 300) {
+      alert("Isi berita maks 300 karakter");
+      return;
+    } else {
+      $buttonSaveChange.html('<i class="fas fa-circle-notch fa-spin" id="spinnerSubmit">');
+    }
 
+    var uploadTask = firebase.storage().ref('images/news/' + todayDate.getTime()).put(pic);
+    uploadTask.on('state_changed', function (snapshot) {
+      var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+      console.log('Upload is ' + progress + '% done');
+      switch (snapshot.state) {
+        case firebase.storage.TaskState.PAUSED: // or 'paused'
+          console.log('Upload is paused');
+          break;
+        case firebase.storage.TaskState.RUNNING: // or 'running'
+          console.log('Upload is running');
+          break;
+      }
+    }, function (error) {
+      switch (error.code) {
+        case 'storage/unauthorized':
+          // User doesn't have permission to access the object
+          console.log("unauthorized");
+          break;
+        case 'storage/canceled':
+          // User canceled the upload
+          console.log("canceled");
+          break;
+        case 'storage/unknown':
+          // Unknown error occurred, inspect error.serverResponse
+          console.log("unknown");
+          break;
+      }
+    }, async function () {
+      // Handle successful uploads on complete
+      await uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+        console.log('File available at', downloadURL);
+        pic_link = downloadURL;
+      });
 
-      onItemUpdating: async function (args) {
-        args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
-        delete args.item['keys'];
-        await db.collection("kebun").doc(args.previousItem.keys)
-          .update(args.item)
+      var newsData = {
+        body: body,
+        date: todayDate,
+        master: master,
+        title: title,
+        url_pic: pic_link,
+        url_video: url_video
+      }
+
+      await db.collection("berita")
+        .add(newsData)
+        .then(function () {
+          console.log("Success");
+          $buttonSaveChange.html('Submit');
+          jQuery("#modal-default").modal('hide');
+          pic = null;
+        })
+        .catch(function (error) {
+          console.error(error);
+        });
+    });
+  }
+
+  function editNews(id) {
+    let todayDate = new Date();
+    let title = $titleInput.val();
+    let body = $bodyInput.val();
+    let url_video = $urlVideoInput.val();
+    let master = ($master.val() === '1');
+    let pic_link;
+
+    if (title === "" || body === "") {
+      return;
+    } else if (title.length > 50) {
+      alert("Judul berita maks 50 karakter");
+      return;
+    } else if (body.length > 300) {
+      alert("Isi berita maks 300 karakter");
+      return;
+    } else {
+      $buttonSaveChange.html('<i class="fas fa-circle-notch fa-spin" id="spinnerSubmit">');
+    }
+
+    if (pic === null) {
+      db.collection("berita").doc(tableData[id].keys).update({
+        body: body,
+        master: master,
+        title: title,
+        url_video: url_video
+      })
+        .then(function () {
+          console.log("Document successfully updated!");
+          $buttonSaveChange.html('Submit');
+          jQuery("#modal-default").modal('hide');
+        })
+        .catch(function (error) {
+          // The document probably doesn't exist.
+          console.error("Error updating document: ", error);
+        });
+    } else {
+      var uploadTask = firebase.storage().ref('images/news/' + todayDate.getTime()).put(pic);
+      uploadTask.on('state_changed', function (snapshot) {
+        var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        console.log('Upload is ' + progress + '% done');
+        switch (snapshot.state) {
+          case firebase.storage.TaskState.PAUSED: // or 'paused'
+            console.log('Upload is paused');
+            break;
+          case firebase.storage.TaskState.RUNNING: // or 'running'
+            console.log('Upload is running');
+            break;
+        }
+      }, function (error) {
+        switch (error.code) {
+          case 'storage/unauthorized':
+            // User doesn't have permission to access the object
+            console.log("unauthorized");
+            break;
+          case 'storage/canceled':
+            // User canceled the upload
+            console.log("canceled");
+            break;
+          case 'storage/unknown':
+            // Unknown error occurred, inspect error.serverResponse
+            console.log("unknown");
+            break;
+        }
+      }, async function () {
+        // Handle successful uploads on complete
+        await uploadTask.snapshot.ref.getDownloadURL().then(function (downloadURL) {
+          console.log('File available at', downloadURL);
+          pic_link = downloadURL;
+        });
+
+        await db.collection("berita").doc(tableData[id].keys).update({
+          body: body,
+          master: master,
+          title: title,
+          url_pic: pic_link,
+          url_video: url_video
+        })
           .then(function () {
-          }).catch(function (error) {
-            alert('Data bermasalah');
-          });
-
-      },
-
-      onItemInserting: async function (args) {
-        args.cancel = true; //cancel first cause if not cancel, the table will update first before database confirm it
-        delete args.item['keys'];
-        await db.collection("kebun")
-          .where("kode", "==", args.item.kode)
-          .get()
-          .then(function (querySnapshot) {
-            isEmpty = querySnapshot.empty;
+            console.log("Document successfully updated!");
+            $buttonSaveChange.html('Submit');
+            jQuery("#modal-default").modal('hide');
           })
           .catch(function (error) {
+            // The document probably doesn't exist.
+            console.error("Error updating document: ", error);
           });
-        if (isEmpty) {
-          args.item.master = true;
-          await db.collection("kebun")
-            .add(args.item)
-            .then(function () {
-              console.log(args.item);
-            })
-            .catch(function (error) {
-            });
-        } else {
-          alert("Kode sudah terdaftar");
-        }
-      },
+      });
+    }
+  }
 
-      controller: {
-        /*loadData: function (filter) {
-          return $.grep(data, function (client) {
-            return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
-              && (!filter.nama.toLowerCase() || client.nama.toLowerCase().indexOf(filter.nama.toLowerCase()) > -1)
-              && (!filter.manager.toLowerCase() || client.manager.toLowerCase().indexOf(filter.manager.toLowerCase()) > -1)
-              && (!filter.kelompok.toLowerCase() || client.kelompok.toLowerCase().indexOf(filter.kelompok.toLowerCase()) > -1)
-              && (filter.master === undefined || client.master === filter.master);
-          });
-        }*/
-      },
-
-      data: data,
-
-      fields: [
-        {name: "tanggal", title: "Tanggal", type: "text", width: 100, editing: false, validate: "required"},
-        {name: "title", title: "Title", type: "text", width: 300, editing: false, validate: "required"},
-        {name: "body", title: "Body", type: "text", width: 300, validate: "required"},
-        {name: "video", title: "Video Url", type: "text", width: 100, validate: "required"},
-        {
-          name: "foto", title: "Foto Url", type: "text", width: 100, filtering: false,
-          itemTemplate: function (value, item) {
-            return jQuery("<input>").attr("type", "file").attr("style", "display: none;");
-          }
-        },
-        {name: "master", title: "Show", type: "checkbox", width: 60},
-        {type: "control", width: 60},
-      ]
+  function deleteNews(id) {
+    db.collection("berita").doc(tableData[id].keys).delete().then(function(){
+      console.log("Document successfully deleted!");
+    }).catch(function(error) {
+      console.error("Error removing document: ", error);
     });
   }
 </script>

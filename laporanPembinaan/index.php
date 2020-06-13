@@ -419,7 +419,9 @@
             const tempData = doc.data();
             tempData['keys'] = doc.id;
             tempData['tanggal'] = new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).toLocaleString();
-            tempData['tanggalTarget'] = new Date(doc.data().target.seconds * 1000).toLocaleDateString();
+            if (doc.data().target != null){
+              tempData['tanggalTarget'] = new Date(doc.data().target.seconds * 1000).toLocaleDateString();
+            }
             tempData['nama_pegawai'] = nama;
             data.push(tempData);
             var marker = L.marker([doc.data().location_pembinaan_petani.lat, doc.data().location_pembinaan_petani.long]).addTo(layerGroup);
@@ -451,7 +453,6 @@
       pageSize: 10,
 
       onRefreshed: function(args) {
-        console.log(mapInitTable);
         if (!mapInitTable && refreshCount >= 2) {
           layerGroup.clearLayers();
           var item = args.grid.data;
@@ -470,6 +471,7 @@
             return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
               && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
               && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
+              && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
               && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
               && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
               && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
@@ -487,6 +489,7 @@
         { name: "tipe_kunjungan", title: "Tipe Kunjungan", type: "text", width: 100, editing: false },
         { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100 },
+        { name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
         { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
         { name: "saran", title: "Saran", type: "text", width: 120 },

@@ -467,6 +467,7 @@
             return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
               && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
               && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
+              && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
               && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
               && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
               && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1);
@@ -480,6 +481,7 @@
         { name: "tanggal", title: "Tanggal", type: "text", width: 85, editing: false },
         { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
         { name: "kapling", title: "Kapling", type: "text", width: 100, editing: false },
+        { name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false },
         { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
         { name: "prioritas", title: "Type", type: "text", width: 55 },
         { name: "saran", title: "Saran", type: "text", width: 120 },
