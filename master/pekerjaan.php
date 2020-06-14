@@ -148,6 +148,14 @@
         }
       },
 
+      onItemDeleting: async function (args) {
+        db.collection("pekerjaan").doc(args.item['keys']).delete().then(function() {
+          console.log("Document successfully deleted!");
+        }).catch(function(error) {
+          console.error("Error removing document: ", error);
+        });
+      },
+
       controller: {
         loadData: function(filter) {
           return $.grep(data, function(client) {
@@ -161,7 +169,7 @@
       fields: [
         { name: "nama", title: "Nama Pekerjaan", type: "text", width: 100, validate: "required" },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
-        { type: "control", deleteButton: false }
+        { type: "control" }
       ]
     });
   }
