@@ -86,6 +86,21 @@
                 </div>
               </div>
               <!-- ./col -->
+              <div class="col-lg-3 col-6">
+                <!-- small box -->
+                <div class="small-box bg-gradient-teal">
+                  <div class="inner">
+                    <h3 id="laporanProduksi"><i class="fas fa-circle-notch fa-spin" id="spinner"></i></h3>
+
+                    <p>Laporan <b>Produksi</b> <br> Hari ini</p>
+                  </div>
+                  <div class="icon">
+                    <i class="ion ion-document"></i>
+                  </div>
+                  <a href="../produksiKu" class="small-box-footer">More info <i class="fas fa-arrow-circle-right"></i></a>
+                </div>
+              </div>
+              <!-- ./col -->
             </div>
           </div>
         </div>
@@ -186,6 +201,8 @@
     .get().then((hasilKerjaData) => $("#laporan").html(hasilKerjaData.size));
   db.collection('report').where("updated_at_pembinaan_petani", ">=", today)
     .get().then((pembinaanData) => $("#laporanPembinaan").html(pembinaanData.size));
+  db.collection('produksiku').where("updated", ">=", today)
+    .get().then((produksiData) => $("#laporanProduksi").html(produksiData.size));
 </script>
 
 </body>

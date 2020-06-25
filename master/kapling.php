@@ -311,6 +311,9 @@
             return (!filter.kode.toLowerCase() || client.kode.toLowerCase().indexOf(filter.kode.toLowerCase()) > -1)
               && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
               && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1)
+              && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
+              && (!filter.kud.toLowerCase() || client.kud.toLowerCase().indexOf(filter.kud.toLowerCase()) > -1)
+              && (!filter.kt.toLowerCase() || client.kt.toLowerCase().indexOf(filter.kt.toLowerCase()) > -1)
               && (filter.master === undefined || client.master === filter.master);
           });
         },
@@ -322,6 +325,9 @@
         { name: "kode", title: "Kode", type: "text", width: 60, editing: false, validate: "required" },
         { name: "nama_petani", title: "Nama Petani", type: "text", width: 150, validate: "required" },
         { name: "no_kontak", title: "No Kontak Petani", type: "text", width: 150, validate: "required" },
+        { name: "kebun", title: "Kebun", type: "text", width: 150, inserting: false },
+        { name: "kud", title: "Kode KUD", type: "text", width: 150, inserting: false },
+        { name: "kt", title: "Kode KT", type: "text", width: 150, inserting: false },
         { name: "master", title: "Show", type: "checkbox", width: 60 },
         { type: "control", deleteButton: false}
       ]
