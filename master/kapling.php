@@ -161,7 +161,7 @@
       querySnapshot.forEach((doc) => {
         if (!index.includes(doc.data().kode)) {
           index.push(doc.data().kode);
-          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_koperasi + '</option>';
+          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_koperasi + ' - ' + doc.data().kode + '</option>';
         }
       });
       $('#kudSpinner').attr('hidden', '');
@@ -194,7 +194,7 @@
       querySnapshot.forEach((doc) => {
         if (!index.includes(doc.data().kode)) {
           index.push(doc.data().kode);
-          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_kelompok_tani + '</option>';
+          optionList += '<option value="' + doc.data().kode + '">' + doc.data().nama_kelompok_tani + ' - ' + doc.data().kode + '</option>';
         }
       });
       $('#ktSpinner').attr('hidden', '');
