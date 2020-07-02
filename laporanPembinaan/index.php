@@ -510,7 +510,8 @@
               return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
             }
           }
-        }
+        },
+        { name: "rating_pembinaan_petani", title: "Rating", type: "number", width: 100 }
       ]
     });
   }

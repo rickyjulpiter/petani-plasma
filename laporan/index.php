@@ -494,7 +494,8 @@
               return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
             }
           }
-        }
+        },
+        { name: "rating", title: "Rating", type: "number", width: 100 }
       ]
     });
   }
