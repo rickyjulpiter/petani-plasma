@@ -26,11 +26,19 @@
             </p>
           </a>
         </li>
+        <li class="nav-item">
+          <a href="../laporanTahunan" class="nav-link">
+            <i class="nav-icon fas fa-file-alt"></i>
+            <p>
+              Laporan Tahunan
+            </p>
+          </a>
+        </li>
         <li class="nav-item has-treeview">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-file-alt"></i>
             <p>
-              Laporan
+              Laporan Per Modul
               <i class="right fas fa-angle-left"></i>
             </p>
           </a>
