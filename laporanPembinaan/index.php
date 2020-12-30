@@ -57,6 +57,13 @@
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
+                <label>Staff</label>
+                <label for="staffSelect"></label><select class="form-control select2bs4" id="staffSelect"
+                                                         style="width: 100%;" data-placeholder="Staff">
+                  <option selected="selected" value="" disabled></option>
+                </select>
+              </div>
+              <div class="form-group">
                 <label>Kebun</label>
                 <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
                   <option selected="selected" value="" disabled></option>
@@ -144,6 +151,7 @@
   var db = firebase.firestore();
   var optionList;
   var index;
+  var selectedOptionStaff;
   var selectedOptionKebun;
   var selectedOptionKud;
   var selectedOptionKt;
@@ -187,8 +195,51 @@
     $('#kebunSelect').append(optionList);
   })
 
+  db.collection("users")
+    .where("role", "==", "STAFF")
+    .orderBy("nama_pegawai")
+    .get().then((querySnapshot) => {
+    optionList = '';
+    optionList += '<option value="" selected="selected" disabled></option>';
+    querySnapshot.forEach((doc) => {
+      optionList += '<option value="' + doc.id + '">' + doc.data().nama_pegawai + '</option>';
+    });
+    $('#staffSelect').append(optionList);
+  })
+
+  $('#staffSelect').on('change', function () {
+    selectedOptionStaff = this.value;
+    $('#kebunSelect').attr('disabled', '');
+    $('#kudSelect').attr('disabled', '');
+    $('#ktSelect').attr('disabled', '');
+    $('#tanggalSpinner').removeAttr('hidden');
+    db.collection("report")
+      .where("id_user", "==", selectedOptionStaff)
+      .get().then((querySnapshot) => {
+      $("#tanggalPickerDari").datepicker("refresh");
+      $("#tanggalPickerDari").datepicker("setDate", null);
+      $("#tanggalPickerSampai").datepicker("refresh");
+      $("#tanggalPickerSampai").datepicker("setDate", null);
+      availableDates = [];
+      if (data.length) {
+        data = [];
+        load();
+      }
+      if (!mapInit) {
+        layerGroup.clearLayers();
+      }
+      querySnapshot.forEach((doc) => {
+        if (doc.data().updated_at_pembinaan_petani != null) {
+          availableDates.push(new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).setHours(0, 0, 0, 0));
+        }
+      });
+      $('#tanggalSpinner').attr('hidden', '');
+    })
+  })
+
   $('#kebunSelect').on('change', function() {
     selectedOptionKebun = this.value;
+    $('#staffSelect').attr('disabled', '');
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
     $('#kudSpinner').removeAttr('hidden');
@@ -354,10 +405,38 @@
       layerGroup.clearLayers();
     }
 
-    if(selectedOptionKud === "all") {
-      if(selectedOptionKt === "all") {
+    if(!selectedOptionKebun) {
+      db.collection("report")
+        .where("id_user", "==", selectedOptionStaff)
+        .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
+        .orderBy("updated_at_pembinaan_petani")
+        .onSnapshot((querySnapshot) => {
+          fetchData(querySnapshot);
+        })
+    } else {
+      if(selectedOptionKud === "all") {
+        if(selectedOptionKt === "all") {
+          db.collection("report")
+            .where("kebun", "==", selectedOptionKebun)
+            .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
+            .orderBy("updated_at_pembinaan_petani")
+            .onSnapshot((querySnapshot) => {
+              fetchData(querySnapshot);
+            })
+        } else {
+          db.collection("report")
+            .where("kebun", "==", selectedOptionKebun)
+            .where("kt", "==", selectedOptionKt)
+            .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
+            .orderBy("updated_at_pembinaan_petani")
+            .onSnapshot((querySnapshot) => {
+              fetchData(querySnapshot);
+            })
+        }
+      } else if(selectedOptionKt === "all") {
         db.collection("report")
           .where("kebun", "==", selectedOptionKebun)
+          .where("kud", "==", selectedOptionKud)
           .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
           .orderBy("updated_at_pembinaan_petani")
           .onSnapshot((querySnapshot) => {
@@ -366,6 +445,7 @@
       } else {
         db.collection("report")
           .where("kebun", "==", selectedOptionKebun)
+          .where("kud", "==", selectedOptionKud)
           .where("kt", "==", selectedOptionKt)
           .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
           .orderBy("updated_at_pembinaan_petani")
@@ -373,25 +453,6 @@
             fetchData(querySnapshot);
           })
       }
-    } else if(selectedOptionKt === "all") {
-      db.collection("report")
-        .where("kebun", "==", selectedOptionKebun)
-        .where("kud", "==", selectedOptionKud)
-        .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
-        .orderBy("updated_at_pembinaan_petani")
-        .onSnapshot((querySnapshot) => {
-          fetchData(querySnapshot);
-        })
-    } else {
-      db.collection("report")
-        .where("kebun", "==", selectedOptionKebun)
-        .where("kud", "==", selectedOptionKud)
-        .where("kt", "==", selectedOptionKt)
-        .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
-        .orderBy("updated_at_pembinaan_petani")
-        .onSnapshot((querySnapshot) => {
-          fetchData(querySnapshot);
-        })
     }
 
     function fetchData(querySnapshot) {
@@ -441,79 +502,162 @@
     var mapInitTable = true;
     var refreshCount = 0;
     $("#spinner").attr("hidden", "");
-    $("#jsGrid1").jsGrid({
-      height: 600,
-      width: "100%",
 
-      filtering: true,
-      editing: false,
-      sorting: true,
-      autoload: true,
-      paging: true,
-      pageSize: 10,
+    if (!selectedOptionKebun) {
+      $("#jsGrid1").jsGrid({
+        height: 600,
+        width: "100%",
 
-      onRefreshed: function(args) {
-        if (!mapInitTable && refreshCount >= 2) {
-          layerGroup.clearLayers();
-          var item = args.grid.data;
-          item.forEach((data) => {
-            var marker = L.marker([data.location_pembinaan_petani.lat, data.location_pembinaan_petani.long]).addTo(layerGroup);
-            marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
-          })
-        }
-        mapInitTable = false;
-        refreshCount += 1;
-      },
+        filtering: true,
+        editing: false,
+        sorting: true,
+        autoload: true,
+        paging: true,
+        pageSize: 10,
 
-      controller: {
-        loadData: function(filter) {
-          return $.grep(data, function(client) {
-            return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
-              && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
-              && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
-              && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
-              && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
-              && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
-              && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
-              && (!filter.tanggapan.toLowerCase() || client.tanggapan.toLowerCase().indexOf(filter.tanggapan.toLowerCase()) > -1)
-              && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
-              && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1);
-          });
-        },
-      },
-
-      data: data,
-
-      fields: [
-        { name: "tanggal", title: "Tanggal", type: "text", width: 87, editing: false },
-        { name: "tipe_kunjungan", title: "Tipe Kunjungan", type: "text", width: 100, editing: false },
-        { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
-        { name: "kapling", title: "Kapling", type: "text", width: 100 },
-        { name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false },
-        { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-        { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
-        { name: "saran", title: "Saran", type: "text", width: 120 },
-        { name: "tanggapan", title: "Pendapat petani", type: "text", width: 120 },
-        { name: "pekerjaan", title: "Pekerjaan", type: "text", width: 120 },
-        { name: "bahan", title: "Bahan", type: "text", width: 120 },
-        { name: "quantity", title: "Quantity", type: "text", width: 120 },
-        { name: "dosis", title: "Dosis", type: "text", width: 120 },
-        { name: "tanggalTarget", title: "Target", type: "text", width: 120 },
-        { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
-        { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
-        { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
-          itemTemplate: function (value, item) {
-            if(value === null){
-              return $("<div>").text("-");
-            }
-            else {
-              return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
-            }
+        onRefreshed: function (args) {
+          if (!mapInitTable && refreshCount >= 2) {
+            layerGroup.clearLayers();
+            var item = args.grid.data;
+            item.forEach((data) => {
+              var marker = L.marker([data.location_hasil_kerja.lat, data.location_hasil_kerja.long]).addTo(layerGroup);
+              marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
+            })
           }
+          mapInitTable = false;
+          refreshCount += 1;
         },
-        { name: "rating_pembinaan_petani", title: "Rating", type: "number", width: 100 }
-      ]
-    });
+
+        controller: {
+          loadData: function (filter) {
+            return $.grep(data, function(client) {
+              return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
+                && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
+                && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
+                && (!filter.kud.toLowerCase() || client.kud.toLowerCase().indexOf(filter.kud.toLowerCase()) > -1)
+                && (!filter.kt.toLowerCase() || client.kt.toLowerCase().indexOf(filter.kt.toLowerCase()) > -1)
+                && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
+                && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
+                && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
+                && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
+                && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
+                && (!filter.tanggapan.toLowerCase() || client.tanggapan.toLowerCase().indexOf(filter.tanggapan.toLowerCase()) > -1)
+                && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
+                && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1);
+            });
+          },
+        },
+
+        data: data,
+
+        fields: [
+          { name: "tanggal", title: "Tanggal", type: "text", width: 87, editing: false },
+          { name: "tipe_kunjungan", title: "Tipe Kunjungan", type: "text", width: 100, editing: false },
+          { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
+          {name: "kebun", title: "Kebun", type: "text", width: 100, editing: false},
+          {name: "kud", title: "KUD", type: "text", width: 100, editing: false},
+          {name: "kt", title: "KT", type: "text", width: 100, editing: false},
+          { name: "kapling", title: "Kapling", type: "text", width: 100 },
+          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false },
+          { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
+          { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
+          { name: "saran", title: "Saran", type: "text", width: 120 },
+          { name: "tanggapan", title: "Pendapat petani", type: "text", width: 120 },
+          { name: "pekerjaan", title: "Pekerjaan", type: "text", width: 120 },
+          { name: "bahan", title: "Bahan", type: "text", width: 120 },
+          { name: "quantity", title: "Quantity", type: "text", width: 120 },
+          { name: "dosis", title: "Dosis", type: "text", width: 120 },
+          { name: "tanggalTarget", title: "Target", type: "text", width: 120 },
+          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
+          { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
+          { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
+            itemTemplate: function (value, item) {
+              if(value === null){
+                return $("<div>").text("-");
+              }
+              else {
+                return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
+              }
+            }
+          },
+          { name: "rating_pembinaan_petani", title: "Rating", type: "number", width: 100 }
+        ]
+      });
+    } else {
+      $("#jsGrid1").jsGrid({
+        height: 600,
+        width: "100%",
+
+        filtering: true,
+        editing: false,
+        sorting: true,
+        autoload: true,
+        paging: true,
+        pageSize: 10,
+
+        onRefreshed: function(args) {
+          if (!mapInitTable && refreshCount >= 2) {
+            layerGroup.clearLayers();
+            var item = args.grid.data;
+            item.forEach((data) => {
+              var marker = L.marker([data.location_pembinaan_petani.lat, data.location_pembinaan_petani.long]).addTo(layerGroup);
+              marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
+            })
+          }
+          mapInitTable = false;
+          refreshCount += 1;
+        },
+
+        controller: {
+          loadData: function(filter) {
+            return $.grep(data, function(client) {
+              return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
+                && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
+                && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
+                && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
+                && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
+                && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
+                && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
+                && (!filter.tanggapan.toLowerCase() || client.tanggapan.toLowerCase().indexOf(filter.tanggapan.toLowerCase()) > -1)
+                && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
+                && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1);
+            });
+          },
+        },
+
+        data: data,
+
+        fields: [
+          { name: "tanggal", title: "Tanggal", type: "text", width: 87, editing: false },
+          { name: "tipe_kunjungan", title: "Tipe Kunjungan", type: "text", width: 100, editing: false },
+          { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
+          { name: "kapling", title: "Kapling", type: "text", width: 100 },
+          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false },
+          { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
+          { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
+          { name: "saran", title: "Saran", type: "text", width: 120 },
+          { name: "tanggapan", title: "Pendapat petani", type: "text", width: 120 },
+          { name: "pekerjaan", title: "Pekerjaan", type: "text", width: 120 },
+          { name: "bahan", title: "Bahan", type: "text", width: 120 },
+          { name: "quantity", title: "Quantity", type: "text", width: 120 },
+          { name: "dosis", title: "Dosis", type: "text", width: 120 },
+          { name: "tanggalTarget", title: "Target", type: "text", width: 120 },
+          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
+          { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
+          { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
+            itemTemplate: function (value, item) {
+              if(value === null){
+                return $("<div>").text("-");
+              }
+              else {
+                return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
+              }
+            }
+          },
+          { name: "rating_pembinaan_petani", title: "Rating", type: "number", width: 100 }
+        ]
+      });
+    }
   }
 </script>
 </body>

@@ -57,6 +57,13 @@
           <div class="row">
             <div class="col-md-4">
               <div class="form-group">
+                <label>Staff</label>
+                <label for="staffSelect"></label><select class="form-control select2bs4" id="staffSelect"
+                                                         style="width: 100%;" data-placeholder="Staff">
+                  <option selected="selected" value="" disabled></option>
+                </select>
+              </div>
+              <div class="form-group">
                 <label>Kebun</label>
                 <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
                   <option selected="selected" value="" disabled></option>
@@ -144,6 +151,7 @@
   var db = firebase.firestore();
   var optionList;
   var index;
+  var selectedOptionStaffOrKrani;
   var selectedOptionKebun;
   var selectedOptionKud;
   var selectedOptionKt;
@@ -176,6 +184,46 @@
     return [true, ''];
   }
 
+  db.collection("users")
+    .where("role", "in", ["STAFF", "KRANI"])
+    .orderBy("nama_pegawai")
+    .get().then((querySnapshot) => {
+    optionList = '';
+    optionList += '<option value="" selected="selected" disabled></option>';
+    querySnapshot.forEach((doc) => {
+      optionList += '<option value="' + doc.id + '">' + doc.data().nama_pegawai + ' - ' + doc.data().role + '</option>';
+    });
+    $('#staffSelect').append(optionList);
+  })
+
+  $('#staffSelect').on('change', function () {
+    selectedOptionStaffOrKrani = this.value;
+    $('#kebunSelect').attr('disabled', '');
+    $('#kudSelect').attr('disabled', '');
+    $('#ktSelect').attr('disabled', '');
+    $('#tanggalSpinner').removeAttr('hidden');
+    db.collection("produksiku")
+      .where("id_user", "==", selectedOptionStaffOrKrani)
+      .get().then((querySnapshot) => {
+      $("#tanggalPickerDari").datepicker("refresh");
+      $("#tanggalPickerDari").datepicker("setDate", null);
+      $("#tanggalPickerSampai").datepicker("refresh");
+      $("#tanggalPickerSampai").datepicker("setDate", null);
+      availableDates = [];
+      if (data.length) {
+        data = [];
+        load();
+      }
+      if (!mapInit) {
+        layerGroup.clearLayers();
+      }
+      querySnapshot.forEach((doc) => {
+        availableDates.push(new Date(doc.data().updated.seconds * 1000).setHours(0, 0, 0, 0));
+      });
+      $('#tanggalSpinner').attr('hidden', '');
+    })
+  })
+
   db.collection("kebun")
     .orderBy("kode")
     .get().then((querySnapshot) => {
@@ -189,6 +237,7 @@
 
   $('#kebunSelect').on('change', function() {
     selectedOptionKebun = this.value;
+    $('#staffSelect').attr('disabled','');
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
     $('#kudSpinner').removeAttr('hidden');
@@ -352,10 +401,39 @@
       layerGroup.clearLayers();
     }
 
-    if(selectedOptionKud === "all") {
-      if (selectedOptionKt === "all") {
+    if(!selectedOptionKebun){
+      db.collection("produksiku")
+        .where("id_user", "==", selectedOptionStaffOrKrani)
+        .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
+        .orderBy("updated")
+        .onSnapshot((querySnapshot) => {
+          fetchData(querySnapshot);
+        })
+    } else {
+      if(selectedOptionKud === "all") {
+        if (selectedOptionKt === "all") {
+          db.collection("produksiku")
+            .where("kebun", "==", selectedOptionKebun)
+            .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
+            .orderBy("updated")
+            .onSnapshot((querySnapshot) => {
+              fetchData(querySnapshot);
+            })
+        } else {
+          db.collection("produksiku")
+            .where("kebun", "==", selectedOptionKebun)
+            .where("kt", "==", selectedOptionKt)
+            .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
+            .orderBy("updated")
+            .onSnapshot((querySnapshot) => {
+              fetchData(querySnapshot);
+            })
+        }
+
+      } else if(selectedOptionKt === "all") {
         db.collection("produksiku")
           .where("kebun", "==", selectedOptionKebun)
+          .where("kud", "==", selectedOptionKud)
           .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
           .orderBy("updated")
           .onSnapshot((querySnapshot) => {
@@ -364,6 +442,7 @@
       } else {
         db.collection("produksiku")
           .where("kebun", "==", selectedOptionKebun)
+          .where("kud", "==", selectedOptionKud)
           .where("kt", "==", selectedOptionKt)
           .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
           .orderBy("updated")
@@ -371,26 +450,6 @@
             fetchData(querySnapshot);
           })
       }
-
-    } else if(selectedOptionKt === "all") {
-      db.collection("produksiku")
-        .where("kebun", "==", selectedOptionKebun)
-        .where("kud", "==", selectedOptionKud)
-        .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
-        .orderBy("updated")
-        .onSnapshot((querySnapshot) => {
-          fetchData(querySnapshot);
-        })
-    } else {
-      db.collection("produksiku")
-        .where("kebun", "==", selectedOptionKebun)
-        .where("kud", "==", selectedOptionKud)
-        .where("kt", "==", selectedOptionKt)
-        .where("updated", ">=", selectedDateDari).where("updated", "<", selectedDateSampai)
-        .orderBy("updated")
-        .onSnapshot((querySnapshot) => {
-          fetchData(querySnapshot);
-        })
     }
   })
 
@@ -436,80 +495,164 @@
     var mapInitTable = true;
     var refreshCount = 0;
     $("#spinner").attr("hidden", "");
-    $("#jsGrid1").jsGrid({
-      height: 600,
-      width: "100%",
 
-      filtering: true,
-      editing: false,
-      sorting: true,
-      autoload: true,
-      paging: true,
-      pageSize: 10,
+    if(!selectedOptionKebun) {
+      $("#jsGrid1").jsGrid({
+        height: 600,
+        width: "100%",
 
-      onRefreshed: function(args) {
-        if (!mapInitTable && refreshCount >= 2) {
-          layerGroup.clearLayers();
-          var item = args.grid.data;
-          item.forEach((data) => {
-            var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
-            marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
-          })
-        }
-        mapInitTable = false;
-        refreshCount += 1;
-      },
+        filtering: true,
+        editing: false,
+        sorting: true,
+        autoload: true,
+        paging: true,
+        pageSize: 10,
 
-      controller: {
-        loadData: function(filter) {
-          return $.grep(data, function(client) {
-            return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
-              && (!filter.id_role.toLowerCase() || client.id_role.toLowerCase().indexOf(filter.id_role.toLowerCase()) > -1)
-              && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
-              && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
-              && (!filter.tandan_masak || client.tandan_masak === filter.tandan_masak)
-              && (!filter.mentah || client.mentah === filter.mentah)
-              && (!filter.overripe || client.overripe === filter.overripe)
-              && (!filter.empty_bunch || client.empty_bunch === filter.empty_bunch)
-              && (!filter.abnormal || client.abnormal === filter.abnormal)
-              && (!filter.tangkai_panjang || client.tangkai_panjang === filter.tangkai_panjang)
-              && (!filter.tidak_cangkam_kodok || client.tidak_cangkam_kodok === filter.tidak_cangkam_kodok)
-              && (!filter.kg_brondolan_diatas_goni || client.kg_brondolan_diatas_goni === filter.kg_brondolan_diatas_goni)
-              && (!filter.kg_brondolan_tanpa_goni || client.kg_brondolan_tanpa_goni === filter.kg_brondolan_tanpa_goni);
-          });
-        },
-      },
-
-      data: data,
-
-      fields: [
-        { name: "tanggal", title: "Tanggal", type: "text", width: 85 },
-        { name: "id_role", title: "STAFF/KRANI", type: "text", width: 55 },
-        { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100 },
-        { name: "kapling", title: "Kapling", type: "text", width: 60 },
-        { name: "tandan_masak", title: "Tandan Masak", type: "number", width: 55 },
-        { name: "mentah", title: "Mentah", type: "number", width: 55 },
-        { name: "overripe", title: "Overripe", type: "number", width: 55 },
-        { name: "empty_bunch", title: "Jjg Kosong", type: "number", width: 55 },
-        { name: "abnormal", title: "Abnormal", type: "number", width: 55 },
-        { name: "tangkai_panjang", title: "Tangkai Panjang", type: "number", width: 55 },
-        { name: "tidak_cangkam_kodok", title: "Tdk Cangkam Kodok", type: "number", width: 55 },
-        { name: "kg_brondolan_diatas_goni", title: "Kg Brondolan Diatas Goni", type: "number", width: 55 },
-        { name: "kg_brondolan_tanpa_goni", title: "Kg Brondolan Tanpa Goni", type: "number", width: 55 },
-        { name: "ket", title: "Ket", type: "number", width: 120, sorting: false },
-        { name: "url_pic", title: "Foto", type: "text", width: 85, sorting: false,
-          itemTemplate: function (value, item) {
-            if(value === null){
-              return $("<div>").text("-");
-            }
-            else {
-              return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
-            }
+        onRefreshed: function(args) {
+          if (!mapInitTable && refreshCount >= 2) {
+            layerGroup.clearLayers();
+            var item = args.grid.data;
+            item.forEach((data) => {
+              var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
+              marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
+            })
           }
+          mapInitTable = false;
+          refreshCount += 1;
         },
-        { name: "rating", title: "Rating", type: "number", width: 100 }
-      ]
-    });
+
+        controller: {
+          loadData: function(filter) {
+            return $.grep(data, function(client) {
+              return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
+                && (!filter.id_role.toLowerCase() || client.id_role.toLowerCase().indexOf(filter.id_role.toLowerCase()) > -1)
+                && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
+                && (!filter.kebun.toLowerCase() || client.kebun.toLowerCase().indexOf(filter.kebun.toLowerCase()) > -1)
+                && (!filter.kud.toLowerCase() || client.kud.toLowerCase().indexOf(filter.kud.toLowerCase()) > -1)
+                && (!filter.kt.toLowerCase() || client.kt.toLowerCase().indexOf(filter.kt.toLowerCase()) > -1)
+                && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
+                && (!filter.tandan_masak || client.tandan_masak === filter.tandan_masak)
+                && (!filter.mentah || client.mentah === filter.mentah)
+                && (!filter.overripe || client.overripe === filter.overripe)
+                && (!filter.empty_bunch || client.empty_bunch === filter.empty_bunch)
+                && (!filter.abnormal || client.abnormal === filter.abnormal)
+                && (!filter.tangkai_panjang || client.tangkai_panjang === filter.tangkai_panjang)
+                && (!filter.tidak_cangkam_kodok || client.tidak_cangkam_kodok === filter.tidak_cangkam_kodok)
+                && (!filter.kg_brondolan_diatas_goni || client.kg_brondolan_diatas_goni === filter.kg_brondolan_diatas_goni)
+                && (!filter.kg_brondolan_tanpa_goni || client.kg_brondolan_tanpa_goni === filter.kg_brondolan_tanpa_goni);
+            });
+          },
+        },
+
+        data: data,
+
+        fields: [
+          { name: "tanggal", title: "Tanggal", type: "text", width: 85 },
+          { name: "id_role", title: "STAFF/KRANI", type: "text", width: 55 },
+          { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100 },
+          { name: "kebun", title: "Kebun", type: "text", width: 60 },
+          { name: "kud", title: "KUD", type: "text", width: 60 },
+          { name: "kt", title: "KT", type: "text", width: 60 },
+          { name: "kapling", title: "Kapling", type: "text", width: 60 },
+          { name: "tandan_masak", title: "Tandan Masak", type: "number", width: 55 },
+          { name: "mentah", title: "Mentah", type: "number", width: 55 },
+          { name: "overripe", title: "Overripe", type: "number", width: 55 },
+          { name: "empty_bunch", title: "Jjg Kosong", type: "number", width: 55 },
+          { name: "abnormal", title: "Abnormal", type: "number", width: 55 },
+          { name: "tangkai_panjang", title: "Tangkai Panjang", type: "number", width: 55 },
+          { name: "tidak_cangkam_kodok", title: "Tdk Cangkam Kodok", type: "number", width: 55 },
+          { name: "kg_brondolan_diatas_goni", title: "Kg Brondolan Diatas Goni", type: "number", width: 55 },
+          { name: "kg_brondolan_tanpa_goni", title: "Kg Brondolan Tanpa Goni", type: "number", width: 55 },
+          { name: "ket", title: "Ket", type: "number", width: 120, sorting: false },
+          { name: "url_pic", title: "Foto", type: "text", width: 85, sorting: false,
+            itemTemplate: function (value, item) {
+              if(value === null){
+                return $("<div>").text("-");
+              }
+              else {
+                return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
+              }
+            }
+          },
+          { name: "rating", title: "Rating", type: "number", width: 100 }
+        ]
+      });
+    } else {
+      $("#jsGrid1").jsGrid({
+        height: 600,
+        width: "100%",
+
+        filtering: true,
+        editing: false,
+        sorting: true,
+        autoload: true,
+        paging: true,
+        pageSize: 10,
+
+        onRefreshed: function(args) {
+          if (!mapInitTable && refreshCount >= 2) {
+            layerGroup.clearLayers();
+            var item = args.grid.data;
+            item.forEach((data) => {
+              var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
+              marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
+            })
+          }
+          mapInitTable = false;
+          refreshCount += 1;
+        },
+
+        controller: {
+          loadData: function(filter) {
+            return $.grep(data, function(client) {
+              return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
+                && (!filter.id_role.toLowerCase() || client.id_role.toLowerCase().indexOf(filter.id_role.toLowerCase()) > -1)
+                && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
+                && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
+                && (!filter.tandan_masak || client.tandan_masak === filter.tandan_masak)
+                && (!filter.mentah || client.mentah === filter.mentah)
+                && (!filter.overripe || client.overripe === filter.overripe)
+                && (!filter.empty_bunch || client.empty_bunch === filter.empty_bunch)
+                && (!filter.abnormal || client.abnormal === filter.abnormal)
+                && (!filter.tangkai_panjang || client.tangkai_panjang === filter.tangkai_panjang)
+                && (!filter.tidak_cangkam_kodok || client.tidak_cangkam_kodok === filter.tidak_cangkam_kodok)
+                && (!filter.kg_brondolan_diatas_goni || client.kg_brondolan_diatas_goni === filter.kg_brondolan_diatas_goni)
+                && (!filter.kg_brondolan_tanpa_goni || client.kg_brondolan_tanpa_goni === filter.kg_brondolan_tanpa_goni);
+            });
+          },
+        },
+
+        data: data,
+
+        fields: [
+          { name: "tanggal", title: "Tanggal", type: "text", width: 85 },
+          { name: "id_role", title: "STAFF/KRANI", type: "text", width: 55 },
+          { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100 },
+          { name: "kapling", title: "Kapling", type: "text", width: 60 },
+          { name: "tandan_masak", title: "Tandan Masak", type: "number", width: 55 },
+          { name: "mentah", title: "Mentah", type: "number", width: 55 },
+          { name: "overripe", title: "Overripe", type: "number", width: 55 },
+          { name: "empty_bunch", title: "Jjg Kosong", type: "number", width: 55 },
+          { name: "abnormal", title: "Abnormal", type: "number", width: 55 },
+          { name: "tangkai_panjang", title: "Tangkai Panjang", type: "number", width: 55 },
+          { name: "tidak_cangkam_kodok", title: "Tdk Cangkam Kodok", type: "number", width: 55 },
+          { name: "kg_brondolan_diatas_goni", title: "Kg Brondolan Diatas Goni", type: "number", width: 55 },
+          { name: "kg_brondolan_tanpa_goni", title: "Kg Brondolan Tanpa Goni", type: "number", width: 55 },
+          { name: "ket", title: "Ket", type: "number", width: 120, sorting: false },
+          { name: "url_pic", title: "Foto", type: "text", width: 85, sorting: false,
+            itemTemplate: function (value, item) {
+              if(value === null){
+                return $("<div>").text("-");
+              }
+              else {
+                return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
+              }
+            }
+          },
+          { name: "rating", title: "Rating", type: "number", width: 100 }
+        ]
+      });
+    }
   }
 </script>
 </body>
