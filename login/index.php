@@ -4,7 +4,7 @@
 <body class="hold-transition login-page">
 <div class="login-box">
   <div class="login-logo">
-    <a href="index.php"><b>Petani</b>Plasma</a>
+    <a href="index.php"><b>Go</b>Sawit</a>
   </div>
   <!-- /.login-logo -->
   <div class="card">
