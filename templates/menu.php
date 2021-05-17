@@ -1,7 +1,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
   <!-- Brand Logo -->
   <a href="../dashboard/index.php" class="brand-link">
-    <span class="brand-text font-weight-light">Petani Plasma</span>
+    <span class="brand-text font-weight-light">Go Sawit</span>
   </a>
 
   <!-- Sidebar -->
