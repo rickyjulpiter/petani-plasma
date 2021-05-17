@@ -520,7 +520,7 @@
             layerGroup.clearLayers();
             var item = args.grid.data;
             item.forEach((data) => {
-              var marker = L.marker([data.location_hasil_kerja.lat, data.location_hasil_kerja.long]).addTo(layerGroup);
+              var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
               marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
             })
           }
