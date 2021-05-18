@@ -104,7 +104,7 @@
                   <!-- small box -->
                   <div class="small-box bg-gradient-danger">
                     <div class="inner">
-                      <h3 id="laporanProduksi"><i class="fas fa-circle-notch fa-spin" id="spinner"></i></h3>
+                      <h3 id="laporanKerja"><i class="fas fa-circle-notch fa-spin" id="spinner"></i></h3>
 
                       <p>Laporan <b>Kerja-Ku</b> <br> Hari ini</p>
                     </div>
@@ -217,6 +217,8 @@
       .get().then((pembinaanData) => $("#laporanPembinaan").html(pembinaanData.size));
     db.collection('produksiku').where("updated", ">=", today)
       .get().then((produksiData) => $("#laporanProduksi").html(produksiData.size));
+    db.collection('report').where("updated_at", ">=", today)
+      .get().then((pembinaanData) => $("#laporanKerja").html(pembinaanData.size));
   </script>
 
 </body>
