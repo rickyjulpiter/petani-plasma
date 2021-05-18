@@ -623,7 +623,7 @@
           {name: "prioritas", title: "Type", type: "text", width: 55},
           {name: "saran", title: "Saran", type: "text", width: 120},
           {
-            name: "url_picture", title: "Foto", type: "text", width: 85, sorting: false,
+            name: "url_picture_hasil_kerja", title: "Foto", type: "text", width: 85, sorting: false,
             itemTemplate: function (value, item) {
               if (value === null) {
                 return $("<div>").text("-");
