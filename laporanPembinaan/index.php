@@ -485,7 +485,7 @@
             }
             tempData['nama_pegawai'] = nama;
             data.push(tempData);
-            var marker = L.marker([doc.data().location_pembinaan_petani.lat, doc.data().location_pembinaan_petani.long]).addTo(layerGroup);
+            var marker = L.marker([doc.data().location.lat, doc.data().location.long]).addTo(layerGroup);
             marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
 
             if(data.length === documentSize) {
@@ -600,7 +600,7 @@
             layerGroup.clearLayers();
             var item = args.grid.data;
             item.forEach((data) => {
-              var marker = L.marker([data.location_pembinaan_petani.lat, data.location_pembinaan_petani.long]).addTo(layerGroup);
+              var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
               marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
             })
           }
