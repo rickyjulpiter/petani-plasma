@@ -5,6 +5,7 @@
   #highlight, .highlight {
     background-color: #000000;
   }
+
   .center-screen {
     margin: 0;
     position: absolute;
@@ -37,12 +38,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Laporan Pembinaan-Ku</h1>
+            <h1>Laporan Lapangan-Ku</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
-              <li class="breadcrumb-item active">Laporan / Pembinaan-Ku</li>
+              <li class="breadcrumb-item active">Laporan / Lapangan-Ku</li>
             </ol>
           </div>
         </div>
@@ -65,7 +66,8 @@
               </div>
               <div class="form-group">
                 <label>Kebun</label>
-                <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect" style="width: 100%;" data-placeholder="Kebun">
+                <label for="kebunSelect"></label><select class="form-control select2bs4" id="kebunSelect"
+                                                         style="width: 100%;" data-placeholder="Kebun">
                   <option selected="selected" value="" disabled></option>
                 </select>
               </div>
@@ -73,7 +75,8 @@
               <div class="form-group">
                 <label>KUD</label>
                 <i class="fas fa-circle-notch fa-spin" id="kudSpinner" hidden></i>
-                <label for="kudSelect"></label><select class="form-control select2bs4" id="kudSelect" style="width: 100%;" data-placeholder="KUD">
+                <label for="kudSelect"></label><select class="form-control select2bs4" id="kudSelect"
+                                                       style="width: 100%;" data-placeholder="KUD">
                   <option selected="selected" value="" disabled></option>
                 </select>
               </div>
@@ -84,7 +87,8 @@
               <div class="form-group">
                 <label>KT</label>
                 <i class="fas fa-circle-notch fa-spin" id="ktSpinner" hidden></i>
-                <label for="ktSelect"></label><select class="form-control select2bs4" id="ktSelect" style="width: 100%;" data-placeholder="KT">
+                <label for="ktSelect"></label><select class="form-control select2bs4" id="ktSelect" style="width: 100%;"
+                                                      data-placeholder="KT">
                   <option selected="selected" value="" disabled></option>
                 </select>
               </div>
@@ -95,11 +99,15 @@
                 <div class="row">
                   <div class="col-md-6">
                     <label>Dari</label>
-                    <label for="tanggalPickerDari"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerDari" autocomplete="off">
+                    <label for="tanggalPickerDari"></label><input type="Text" class="form-control"
+                                                                  placeholder="Tanggal kunjungan" id="tanggalPickerDari"
+                                                                  autocomplete="off">
                   </div>
                   <div class="col-md-6">
                     <label>Sampai</label>
-                    <label for="tanggalPickerSampai"></label><input type="Text" class="form-control" placeholder="Tanggal kunjungan" id="tanggalPickerSampai" autocomplete="off">
+                    <label for="tanggalPickerSampai"></label><input type="Text" class="form-control"
+                                                                    placeholder="Tanggal kunjungan"
+                                                                    id="tanggalPickerSampai" autocomplete="off">
                   </div>
                 </div>
                 <span class="text-sm">*Note: Tanggal yang tidak ditandai berarti kosong</span>
@@ -117,7 +125,7 @@
       <!-- /.card -->
       <div class="card" id="mapCard" hidden>
         <div class="card-body">
-          <div id="mapid" style="height: 500px; z-index: 0""></div>
+          <div id="mapid" style="height: 500px; z-index: 0"></div>
         </div>
         <!-- /.card-body-->
       </div>
@@ -139,7 +147,7 @@
 <!-- page script -->
 <?php include '../templates/script.php'; ?>
 <script type="text/javascript">
-  window.onload = function() {
+  window.onload = function () {
     initApp();
   };
 
@@ -177,7 +185,7 @@
 
   function highlightDays(date) {
     for (var i = 0; i < availableDates.length; i++) {
-      if (availableDates[i] == date.getTime()) {
+      if (availableDates[i] === date.getTime()) {
         return [true, 'highlight'];
       }
     }
@@ -229,15 +237,15 @@
         layerGroup.clearLayers();
       }
       querySnapshot.forEach((doc) => {
-        if (doc.data().updated_at_pembinaan_petani != null) {
-          availableDates.push(new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).setHours(0, 0, 0, 0));
+        if (doc.data().updated_at_hasil_kerja != null) {
+          availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
         }
       });
       $('#tanggalSpinner').attr('hidden', '');
     })
   })
 
-  $('#kebunSelect').on('change', function() {
+  $('#kebunSelect').on('change', function () {
     selectedOptionKebun = this.value;
     $('#staffSelect').attr('disabled', '');
     $('#tanggalSpinner').removeAttr('hidden');
@@ -262,7 +270,7 @@
         layerGroup.clearLayers();
       }
       index = [];
-      if(!querySnapshot.size){
+      if (!querySnapshot.size) {
         optionList = '';
         $('#kudSpinner').attr('hidden', '');
         $('#ktSpinner').attr('hidden', '');
@@ -285,12 +293,12 @@
     })
   })
 
-  $('#kudSelect').on('change', function() {
+  $('#kudSelect').on('change', function () {
     selectedOptionKud = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     $('#ktSpinner').removeAttr('hidden');
 
-    if(selectedOptionKud === "all") {
+    if (selectedOptionKud === "all") {
       db.collection("kt")
         .where("kebun", "==", selectedOptionKebun)
         .orderBy("kode")
@@ -308,7 +316,7 @@
     }
   })
 
-  function fetchDataKt (querySnapshot) {
+  function fetchDataKt(querySnapshot) {
     $('#ktSelect').empty();
     $("#tanggalPickerDari").datepicker("refresh");
     $("#tanggalPickerDari").datepicker("setDate", null);
@@ -323,7 +331,7 @@
       layerGroup.clearLayers();
     }
     index = [];
-    if(!querySnapshot.size){
+    if (!querySnapshot.size) {
       optionList = '';
       $('#ktSpinner').attr('hidden', '');
       $('#tanggalSpinner').attr('hidden', '');
@@ -343,7 +351,7 @@
     $('#ktSelect').append(optionList);
   }
 
-  $('#ktSelect').on('change', function() {
+  $('#ktSelect').on('change', function () {
     selectedOptionKt = this.value;
     $('#tanggalSpinner').removeAttr('hidden');
     db.collection("report")
@@ -363,21 +371,21 @@
         layerGroup.clearLayers();
       }
       querySnapshot.forEach((doc) => {
-        if (doc.get('updated_at_pembinaan_petani') != null) {
-          availableDates.push(new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).setHours(0, 0, 0, 0));
+        if (doc.data().updated_at_hasil_kerja != null) {
+          availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
         }
       });
       $('#tanggalSpinner').attr('hidden', '');
     })
   })
 
-  $('#tanggalPickerDari').on('change', function() {
+  $('#tanggalPickerDari').on('change', function () {
     selectedDateDari = $("#tanggalPickerDari").datepicker("getDate");
     $("#tanggalPickerSampai").datepicker("refresh");
     $("#tanggalPickerSampai").datepicker("setDate", null);
   })
 
-  $('#tanggalPickerSampai').on('change', function() {
+  $('#tanggalPickerSampai').on('change', function () {
     data = [{keys: ""}]; //onSnapshot fix
     selectedDateSampai = $("#tanggalPickerSampai").datepicker("getDate");
     selectedDateSampai.setDate(selectedDateSampai.getDate() + 1);
@@ -400,26 +408,25 @@
       }).addTo(mymap);
       layerGroup.addTo(mymap);
       mapInit = false;
-    }
-    else {
+    } else {
       layerGroup.clearLayers();
     }
 
-    if(!selectedOptionKebun) {
+    if (!selectedOptionKebun) {
       db.collection("report")
         .where("id_user", "==", selectedOptionStaff)
-        .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
-        .orderBy("updated_at_pembinaan_petani")
+        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+        .orderBy("updated_at_hasil_kerja")
         .onSnapshot((querySnapshot) => {
           fetchData(querySnapshot);
         })
     } else {
-      if(selectedOptionKud === "all") {
-        if(selectedOptionKt === "all") {
+      if (selectedOptionKud === "all") {
+        if (selectedOptionKt === "all") {
           db.collection("report")
             .where("kebun", "==", selectedOptionKebun)
-            .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
-            .orderBy("updated_at_pembinaan_petani")
+            .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+            .orderBy("updated_at_hasil_kerja")
             .onSnapshot((querySnapshot) => {
               fetchData(querySnapshot);
             })
@@ -427,18 +434,18 @@
           db.collection("report")
             .where("kebun", "==", selectedOptionKebun)
             .where("kt", "==", selectedOptionKt)
-            .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
-            .orderBy("updated_at_pembinaan_petani")
+            .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+            .orderBy("updated_at_hasil_kerja")
             .onSnapshot((querySnapshot) => {
               fetchData(querySnapshot);
             })
         }
-      } else if(selectedOptionKt === "all") {
+      } else if (selectedOptionKt === "all") {
         db.collection("report")
           .where("kebun", "==", selectedOptionKebun)
           .where("kud", "==", selectedOptionKud)
-          .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
-          .orderBy("updated_at_pembinaan_petani")
+          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+          .orderBy("updated_at_hasil_kerja")
           .onSnapshot((querySnapshot) => {
             fetchData(querySnapshot);
           })
@@ -447,56 +454,51 @@
           .where("kebun", "==", selectedOptionKebun)
           .where("kud", "==", selectedOptionKud)
           .where("kt", "==", selectedOptionKt)
-          .where("updated_at_pembinaan_petani", ">=", selectedDateDari).where("updated_at_pembinaan_petani", "<", selectedDateSampai)
-          .orderBy("updated_at_pembinaan_petani")
+          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
+          .orderBy("updated_at_hasil_kerja")
           .onSnapshot((querySnapshot) => {
             fetchData(querySnapshot);
           })
       }
     }
-
-    function fetchData(querySnapshot) {
-      var init = true;
-      var contain;
-      // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
-      // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
-      // The solution is add a contain var and check the if statement
-
-      if (!querySnapshot.empty) {
-        contain = data[0].keys === querySnapshot.docs[0].id;
-      }
-      if (contain || init) {
-        data = [];
-        var documentSize = querySnapshot.size;
-        if(!querySnapshot.size){
-          load();
-        }
-        querySnapshot.forEach((doc) => {
-          var nama = "";
-          //fetch nama pegawai
-          db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
-            nama = doc1.data().nama_pegawai;
-
-            const tempData = doc.data();
-            tempData['keys'] = doc.id;
-            tempData['tanggal'] = new Date(doc.data().updated_at_pembinaan_petani.seconds * 1000).toLocaleString();
-            if (doc.data().target != null){
-              tempData['tanggalTarget'] = new Date(doc.data().target.seconds * 1000).toLocaleDateString();
-            }
-            tempData['nama_pegawai'] = nama;
-            data.push(tempData);
-            var marker = L.marker([doc.data().location.lat, doc.data().location.long]).addTo(layerGroup);
-            marker.bindPopup(nama + "<br>" + doc.data().kapling + "</br>");
-
-            if(data.length === documentSize) {
-              load();
-            }
-          })
-        });
-      }
-    }
   })
 
+  function fetchData(querySnapshot) {
+    var init = true;
+    var contain;
+    // onSnapshot listen to all document in a collection, so it did not filter the 'WHERE' arguments
+    // if there is an update on db after the first db load. The result, table update out of the 'WHERE' range
+    // The solution is add a contain var and check the if statement
+    if (!querySnapshot.empty) {
+      contain = data[0].keys === querySnapshot.docs[0].id;
+    }
+    if (contain || init) {
+      data = [];
+      var documentSize = querySnapshot.size;
+      if (!querySnapshot.size) {
+        load();
+      }
+      querySnapshot.forEach((doc) => {
+        var nama = "";
+        //fetch nama pegawai
+        db.collection("users").doc(doc.data().id_user).get().then((doc1) => {
+          nama = doc1.data().nama_pegawai;
+
+          const tempData = doc.data();
+          tempData['keys'] = doc.id;
+          tempData['tanggal'] = new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).toLocaleString();
+          tempData['nama_pegawai'] = nama;
+          data.push(tempData);
+          var marker = L.marker([doc.data().location.lat, doc.data().location.long]).addTo(layerGroup);
+          marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
+
+          if (data.length === documentSize) {
+            load();
+          }
+        })
+      });
+    }
+  }
 
   function load() {
     var mapInitTable = true;
@@ -540,10 +542,7 @@
                 && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
                 && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
                 && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
-                && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
-                && (!filter.tanggapan.toLowerCase() || client.tanggapan.toLowerCase().indexOf(filter.tanggapan.toLowerCase()) > -1)
-                && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
-                && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1);
+                && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1);
             });
           },
         },
@@ -551,36 +550,27 @@
         data: data,
 
         fields: [
-          { name: "tanggal", title: "Tanggal", type: "text", width: 87, editing: false },
-          { name: "tipe_kunjungan", title: "Tipe Kunjungan", type: "text", width: 100, editing: false },
-          { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
+          {name: "tanggal", title: "Tanggal", type: "text", width: 85, editing: false},
+          {name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false},
           {name: "kebun", title: "Kebun", type: "text", width: 100, editing: false},
           {name: "kud", title: "KUD", type: "text", width: 100, editing: false},
           {name: "kt", title: "KT", type: "text", width: 100, editing: false},
-          { name: "kapling", title: "Kapling", type: "text", width: 100 },
-          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false },
-          { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-          { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
-          { name: "saran", title: "Saran", type: "text", width: 120 },
-          { name: "tanggapan", title: "Pendapat petani", type: "text", width: 120 },
-          { name: "pekerjaan", title: "Pekerjaan", type: "text", width: 120 },
-          { name: "bahan", title: "Bahan", type: "text", width: 120 },
-          { name: "quantity", title: "Quantity", type: "text", width: 120 },
-          { name: "dosis", title: "Dosis", type: "text", width: 120 },
-          { name: "tanggalTarget", title: "Target", type: "text", width: 120 },
-          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
-          { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
-          { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
+          {name: "kapling", title: "Kapling", type: "text", width: 100, editing: false},
+          {name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false},
+          {name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170},
+          {name: "prioritas", title: "Type", type: "text", width: 55},
+          {name: "saran", title: "Saran", type: "text", width: 120},
+          {
+            name: "url_picture", title: "Foto", type: "text", width: 85, sorting: false,
             itemTemplate: function (value, item) {
-              if(value === null){
+              if (value === null) {
                 return $("<div>").text("-");
-              }
-              else {
+              } else {
                 return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
               }
             }
           },
-          { name: "rating_pembinaan_petani", title: "Rating", type: "number", width: 100 }
+          {name: "rating", title: "Rating", type: "number", width: 100}
         ]
       });
     } else {
@@ -595,7 +585,7 @@
         paging: true,
         pageSize: 10,
 
-        onRefreshed: function(args) {
+        onRefreshed: function (args) {
           if (!mapInitTable && refreshCount >= 2) {
             layerGroup.clearLayers();
             var item = args.grid.data;
@@ -609,18 +599,15 @@
         },
 
         controller: {
-          loadData: function(filter) {
-            return $.grep(data, function(client) {
+          loadData: function (filter) {
+            return $.grep(data, function (client) {
               return (!filter.tanggal.toLowerCase() || client.tanggal.toLowerCase().indexOf(filter.tanggal.toLowerCase()) > -1)
                 && (!filter.nama_pegawai.toLowerCase() || client.nama_pegawai.toLowerCase().indexOf(filter.nama_pegawai.toLowerCase()) > -1)
                 && (!filter.kapling.toLowerCase() || client.kapling.toLowerCase().indexOf(filter.kapling.toLowerCase()) > -1)
                 && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
                 && (!filter.kondisi.toLowerCase() || client.kondisi.toLowerCase().indexOf(filter.kondisi.toLowerCase()) > -1)
                 && (!filter.prioritas.toLowerCase() || client.prioritas.toLowerCase().indexOf(filter.prioritas.toLowerCase()) > -1)
-                && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1)
-                && (!filter.tanggapan.toLowerCase() || client.tanggapan.toLowerCase().indexOf(filter.tanggapan.toLowerCase()) > -1)
-                && (!filter.nama_petani.toLowerCase() || client.nama_petani.toLowerCase().indexOf(filter.nama_petani.toLowerCase()) > -1)
-                && (!filter.no_kontak.toLowerCase() || client.no_kontak.toLowerCase().indexOf(filter.no_kontak.toLowerCase()) > -1);
+                && (!filter.saran.toLowerCase() || client.saran.toLowerCase().indexOf(filter.saran.toLowerCase()) > -1);
             });
           },
         },
@@ -628,33 +615,24 @@
         data: data,
 
         fields: [
-          { name: "tanggal", title: "Tanggal", type: "text", width: 87, editing: false },
-          { name: "tipe_kunjungan", title: "Tipe Kunjungan", type: "text", width: 100, editing: false },
-          { name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false },
-          { name: "kapling", title: "Kapling", type: "text", width: 100 },
-          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false },
-          { name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170 },
-          { name: "prioritas", title: "Type", type: "text", width: 55, validate: "required" },
-          { name: "saran", title: "Saran", type: "text", width: 120 },
-          { name: "tanggapan", title: "Pendapat petani", type: "text", width: 120 },
-          { name: "pekerjaan", title: "Pekerjaan", type: "text", width: 120 },
-          { name: "bahan", title: "Bahan", type: "text", width: 120 },
-          { name: "quantity", title: "Quantity", type: "text", width: 120 },
-          { name: "dosis", title: "Dosis", type: "text", width: 120 },
-          { name: "tanggalTarget", title: "Target", type: "text", width: 120 },
-          { name: "nama_petani", title: "Nama Petani", type: "text", width: 100 },
-          { name: "no_kontak", title: "No Kontak", type: "text", width: 100 },
-          { name: "url_pic_pembinaan_petani", title: "Foto", type: "text", width: 85, sorting: false,
+          {name: "tanggal", title: "Tanggal", type: "text", width: 85, editing: false},
+          {name: "nama_pegawai", title: "Nama Pegawai", type: "text", width: 100, editing: false},
+          {name: "kapling", title: "Kapling", type: "text", width: 100, editing: false},
+          {name: "nama_petani", title: "Nama Petani", type: "text", width: 100, editing: false},
+          {name: "kondisi", title: "Kondisi Kapling saat kunjungan", type: "text", width: 170},
+          {name: "prioritas", title: "Type", type: "text", width: 55},
+          {name: "saran", title: "Saran", type: "text", width: 120},
+          {
+            name: "url_pic_hasil_kerja", title: "Foto", type: "text", width: 85, sorting: false,
             itemTemplate: function (value, item) {
-              if(value === null){
+              if (value === null) {
                 return $("<div>").text("-");
-              }
-              else {
+              } else {
                 return $("<a>").attr("href", value).attr("target", "_blank").text("Tampilkan");
               }
             }
           },
-          { name: "rating_pembinaan_petani", title: "Rating", type: "number", width: 100 }
+          {name: "rating", title: "Rating", type: "number", width: 100}
         ]
       });
     }

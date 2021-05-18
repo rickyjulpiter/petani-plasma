@@ -44,21 +44,27 @@
           </a>
           <ul class="nav nav-treeview">
             <li class="nav-item">
-              <a href="../laporan" class="nav-link">
+              <a href="../laporanLapangan" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Staff Kerja</p>
+                <p>Lapangan-Ku</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="../laporanPembinaan" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Pembinaan </p>
+                <p>Pembinaan-Ku</p>
               </a>
             </li>
             <li class="nav-item">
               <a href="../produksiKu" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
-                <p>Produksi-Ku </p>
+                <p>Produksi-Ku</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="../laporanHasilKerja" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Laporan Kerja-Ku</p>
               </a>
             </li>
           </ul>

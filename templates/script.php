@@ -58,14 +58,14 @@
 <script>
   // Your web app's Firebase configuration
   var firebaseConfig = {
-    apiKey: "AIzaSyCxyFfJFi2rp9YjI2A_TJWWWqNF7u1Nfv0",
-    authDomain: "petani-plasma.firebaseapp.com",
-    databaseURL: "https://petani-plasma.firebaseio.com",
-    projectId: "petani-plasma",
-    storageBucket: "petani-plasma.appspot.com",
-    messagingSenderId: "382317878771",
-    appId: "1:382317878771:web:ae816b7ab4dd07e3214686",
-    measurementId: "G-QNSQ75VVH8"
+    apiKey: "AIzaSyBpq4yhqdHYCLDRPn3Kux5dP4DgRJCrGTc",
+    authDomain: "build-02-574c6.firebaseapp.com",
+    databaseURL: "https://build-02-574c6.firebaseio.com",
+    projectId: "build-02-574c6",
+    storageBucket: "build-02-574c6.appspot.com",
+    messagingSenderId: "9625724787",
+    appId: "1:9625724787:web:10f5fdcfdb940d215fc706",
+    measurementId: "G-V6W5C4NDSL"
   };
   // Initialize Firebase
   firebase.initializeApp(firebaseConfig);

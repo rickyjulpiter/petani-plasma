@@ -38,12 +38,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1>Laporan Kunjungan Staff</h1>
+            <h1>Laporan Kerja-Ku</h1>
           </div>
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
               <li class="breadcrumb-item"><a href="../index.php">Home</a></li>
-              <li class="breadcrumb-item active">Laporan / Kerja Staff</li>
+              <li class="breadcrumb-item active">Laporan / Kerja-Ku</li>
             </ol>
           </div>
         </div>
@@ -222,6 +222,7 @@
     $('#ktSelect').attr('disabled', '');
     $('#tanggalSpinner').removeAttr('hidden');
     db.collection("report")
+      .where("created_at", ">", '') // only lapangan kerja have this attribute
       .where("id_user", "==", selectedOptionStaff)
       .get().then((querySnapshot) => {
       $("#tanggalPickerDari").datepicker("refresh");
@@ -237,8 +238,8 @@
         layerGroup.clearLayers();
       }
       querySnapshot.forEach((doc) => {
-        if (doc.data().updated_at_hasil_kerja != null) {
-          availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
+        if (doc.data().updated_at != null) {
+          availableDates.push(new Date(doc.data().updated_at.seconds * 1000).setHours(0, 0, 0, 0));
         }
       });
       $('#tanggalSpinner').attr('hidden', '');
@@ -371,8 +372,8 @@
         layerGroup.clearLayers();
       }
       querySnapshot.forEach((doc) => {
-        if (doc.data().updated_at_hasil_kerja != null) {
-          availableDates.push(new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).setHours(0, 0, 0, 0));
+        if (doc.data().updated_at != null) {
+          availableDates.push(new Date(doc.data().updated_at.seconds * 1000).setHours(0, 0, 0, 0));
         }
       });
       $('#tanggalSpinner').attr('hidden', '');
@@ -415,8 +416,8 @@
     if (!selectedOptionKebun) {
       db.collection("report")
         .where("id_user", "==", selectedOptionStaff)
-        .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-        .orderBy("updated_at_hasil_kerja")
+        .where("created_at", ">=", selectedDateDari).where("created_at", "<", selectedDateSampai)
+        .orderBy("created_at")
         .onSnapshot((querySnapshot) => {
           fetchData(querySnapshot);
         })
@@ -425,8 +426,8 @@
         if (selectedOptionKt === "all") {
           db.collection("report")
             .where("kebun", "==", selectedOptionKebun)
-            .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-            .orderBy("updated_at_hasil_kerja")
+            .where("created_at", ">=", selectedDateDari).where("created_at", "<", selectedDateSampai)
+            .orderBy("created_at")
             .onSnapshot((querySnapshot) => {
               fetchData(querySnapshot);
             })
@@ -434,8 +435,8 @@
           db.collection("report")
             .where("kebun", "==", selectedOptionKebun)
             .where("kt", "==", selectedOptionKt)
-            .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-            .orderBy("updated_at_hasil_kerja")
+            .where("created_at", ">=", selectedDateDari).where("created_at", "<", selectedDateSampai)
+            .orderBy("created_at")
             .onSnapshot((querySnapshot) => {
               fetchData(querySnapshot);
             })
@@ -444,8 +445,8 @@
         db.collection("report")
           .where("kebun", "==", selectedOptionKebun)
           .where("kud", "==", selectedOptionKud)
-          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-          .orderBy("updated_at_hasil_kerja")
+          .where("created_at", ">=", selectedDateDari).where("created_at", "<", selectedDateSampai)
+          .orderBy("created_at")
           .onSnapshot((querySnapshot) => {
             fetchData(querySnapshot);
           })
@@ -454,8 +455,8 @@
           .where("kebun", "==", selectedOptionKebun)
           .where("kud", "==", selectedOptionKud)
           .where("kt", "==", selectedOptionKt)
-          .where("updated_at_hasil_kerja", ">=", selectedDateDari).where("updated_at_hasil_kerja", "<", selectedDateSampai)
-          .orderBy("updated_at_hasil_kerja")
+          .where("created_at", ">=", selectedDateDari).where("created_at", "<", selectedDateSampai)
+          .orderBy("created_at")
           .onSnapshot((querySnapshot) => {
             fetchData(querySnapshot);
           })
@@ -486,7 +487,7 @@
 
           const tempData = doc.data();
           tempData['keys'] = doc.id;
-          tempData['tanggal'] = new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).toLocaleString();
+          tempData['tanggal'] = new Date(doc.data().updated_at.seconds * 1000).toLocaleString();
           tempData['nama_pegawai'] = nama;
           data.push(tempData);
           var marker = L.marker([doc.data().location.lat, doc.data().location.long]).addTo(layerGroup);
@@ -623,7 +624,7 @@
           {name: "prioritas", title: "Type", type: "text", width: 55},
           {name: "saran", title: "Saran", type: "text", width: 120},
           {
-            name: "url_pic_hasil_kerja", title: "Foto", type: "text", width: 85, sorting: false,
+            name: "url_picture", title: "Foto", type: "text", width: 85, sorting: false,
             itemTemplate: function (value, item) {
               if (value === null) {
                 return $("<div>").text("-");
