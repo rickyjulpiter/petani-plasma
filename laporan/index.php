@@ -489,7 +489,7 @@
           tempData['tanggal'] = new Date(doc.data().updated_at_hasil_kerja.seconds * 1000).toLocaleString();
           tempData['nama_pegawai'] = nama;
           data.push(tempData);
-          var marker = L.marker([doc.data().location_hasil_kerja.lat, doc.data().location_hasil_kerja.long]).addTo(layerGroup);
+          var marker = L.marker([doc.data().location.lat, doc.data().location.long]).addTo(layerGroup);
           marker.bindPopup(nama + "<br>" + doc.data().nama_petani + "</br>");
 
           if (data.length === documentSize) {
@@ -522,7 +522,7 @@
             layerGroup.clearLayers();
             var item = args.grid.data;
             item.forEach((data) => {
-              var marker = L.marker([data.location_hasil_kerja.lat, data.location_hasil_kerja.long]).addTo(layerGroup);
+              var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
               marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
             })
           }
@@ -590,7 +590,7 @@
             layerGroup.clearLayers();
             var item = args.grid.data;
             item.forEach((data) => {
-              var marker = L.marker([data.location_hasil_kerja.lat, data.location_hasil_kerja.long]).addTo(layerGroup);
+              var marker = L.marker([data.location.lat, data.location.long]).addTo(layerGroup);
               marker.bindPopup(data.nama_pegawai + "<br>" + data.nama_petani + "</br>");
             })
           }
